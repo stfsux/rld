@@ -1,0 +1,23 @@
+---------------------------------------------------------------------
+Introduction
+---------------------------------------------------------------------
+ Rape'n'load is a GNU/Linux linker focus on size-coding espacially
+for 4k demoscene intro.
+
+
+---------------------------------------------------------------------
+Reserved symbols
+---------------------------------------------------------------------
+* __rld_dt_debug:     pointer to d_ptr of dt_debug dynamic entry.
+* __rld_import_hash:  pointer to list of symbol's hash.
+* __rld_import_nsym:  number of symbol's hash.
+* __rld_import_addr:  pointer to address of each symbol.
+
+
+---------------------------------------------------------------------
+Limitations
+---------------------------------------------------------------------
+* Command line is limited to 255 arguments.
+* Each command line argument is limited to 255 characters.
+* Input/Output elf cannot exceed 2GiB. 
+* Currently supporting only x86 architecture.
