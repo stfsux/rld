@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+
+<!-- saved from url=(0014)about:internet -->
+
+<!-- Begin head -->
+<head profile="http://gmpg.org/xfn/11">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+<meta name="author" content="iKreativ.com" />
+<meta name="copyright" content="iKreativ.com" />
+<meta name="robots" content="index, follow" />
+<meta name="distribution" content="global" />
+<meta name="resource-type" content="document" />
+<meta name="language" content="en" />
+
+<link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
+
+<link href="http://philsturgeon.co.uk/addons/default/themes/monotone/css/style.css" rel="stylesheet" type="text/css" />
+
+
+<!-- Place CSS bug fixes for IE 6 in this comment -->
+<!--[if IE 6]>
+<meta http-equiv="refresh" content="0; url=http://www.microsoft.com/windows/internet-explorer/default.aspx" />
+<script type="text/javascript">
+/* <![CDATA[ */
+window.top.location = 'http://www.microsoft.com/windows/internet-explorer/default.aspx';
+/* ]]> */
+</script>
+<![endif]-->
+
+<!-- Place CSS bug fixes for IE 7 in this comment -->
+<!--[if IE 7]>
+{theme_css('ie.css')}
+<![endif]-->
+
+<title>Phil Sturgeon&nbsp;&bull;&nbsp;Page missing</title>
+
+</head>
+
+<body id="top">
+
+<div id="pageWrapper">
+	
+	<div id="contentWrapper">
+		
+		<div id="logo">
+			<a href="http://philsturgeon.co.uk/" title="Home"><h1>Phil Sturgeon</h1></a>
+		</div>
+
+	
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-8523256-1']);
+  _gaq.push(['_trackPageview']);
+  _gaq.push(['_trackPageLoadTime']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+  })();
+
+</script>
+
+
+	
+		<ul id="nav">
+			<li class="first"><a href="http://philsturgeon.co.uk/blog">Blog</a></li><li><a href="http://philsturgeon.co.uk/code">Code</a></li><li><a href="http://philsturgeon.co.uk/hire">Hire</a></li><li><a href="http://philsturgeon.co.uk/goals/2010">Goals</a></li><li class="last"><a href="http://philsturgeon.co.uk/contact" target="_self">Contact</a></li>
+			<li id="twitter_nav"><a class="tooltip" href="http://twitter.com/philsturgeon" title="Follow us on Twitter.">Twitter</a></li>
+			<li id="facebook_nav"><a class="tooltip" href="http://www.facebook.com/#!/profile.php?id=changeme" title="Follow us on Facebook.">Facebook</a></li>
+			<li id="rss_nav"><a class="tooltip" href="/news/rss/all.rss" title="Subscribe to our RSS feed.">RSS</a></li>
+		</ul>
+		
+		<noscript>
+			<div class="warning_box" style="text-align: center;">
+				<img alt="default.png" src="http://philsturgeon.co.uk/addons/default/themes/monotone/img/default.png" />
+				If you can see this notice you have Javascript disabled. Please enable Javascript to view our site in all it's glory. Thank You.
+			</div>
+		</noscript>
+
+		<div id="header">
+			<div id="slogan">
+				<h1>I release code by the metric fuckton, I work on PyroCMS, Pancake, FuelPHP &amp; CodeIgniter and I occasionally get chased by bears.</h1>
+			</div>
+		</div>
+		
+				
+		<div id="content">
+
+
+
+	<div id="sidebar">
+	<div class="widget blog_categories">
+			<h3>Categories</h3>
+	
+	<ul>
+		<li>
+		<a href="http://philsturgeon.co.uk/blog/category/codeigniter">CodeIgniter</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/command-line">Command Line</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/events">Events</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/expressionengine">ExpressionEngine</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/fuelphp">FuelPHP</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/git">Git</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/iphone">iPhone</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/jquery">jQuery</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/linux">Linux</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/mojomotor">MojoMotor</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/personal">Personal</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/php">PHP</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/pyrocms">PyroCMS</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/rails">Rails</a>	</li>
+</ul>
+	<div class="divider"></div>
+</div>
+<div class="widget social_bookmark">
+			<h3>Share</h3>
+	
+	<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js"></script>
+
+
+<style type="text/css">
+.addthis_toolbox .vertical
+{
+    width: 136px;
+    padding: 10px 0 10px 0;
+}
+
+.addthis_toolbox .vertical a
+{
+    width: 102px;
+    padding: 4px 0 4px 34px;
+    position: relative;
+    display: block;
+    text-decoration: none;
+}
+
+.addthis_toolbox .vertical span
+{
+    position: absolute;
+    left: 14px;
+    top: 4px;
+}
+
+.addthis_toolbox .vertical .more span
+{
+    display: none;
+}
+</style>
+
+<div class="addthis_toolbox">
+    <div class="vertical">
+        <a class="addthis_button_email">Email</a>
+        <a class="addthis_button_print">Print</a>
+        <a class="addthis_button_twitter">Twitter</a>
+        <a class="addthis_button_facebook">Facebook</a>
+        <a class="addthis_button_myspace">MySpace</a>
+        <a class="addthis_button_stumbleupon">Stumble</a>
+        <a class="addthis_button_digg">Digg</a>
+        <div class="more">
+            <a class="addthis_button_expanded">More Destinations</a>
+        </div>
+    </div>
+</div>
+
+	<div class="divider"></div>
+</div>
+<div class="widget html">
+			<h3>twiDAQ</h3>
+	
+	<script src="http://cdn.twidaq.com/static/widgets/widget-0.2.min.js"></script>
+<p>Join the awesome twiDAQ game and invest in people you think are interesting. Invest in me:
+
+<p><script>twiDAQ_widget('philsturgeon');</script></p>
+
+<p>Otherwise you can try investing in Jimbo:</p>
+
+<p><script>twiDAQ_widget('jimbomorrison');</script></p> 
+
+<p><em>He probably rigged it for him to win anyway.</em></p>	<div class="divider"></div>
+</div>
+<div class="widget archive">
+			<h3>Archive</h3>
+	
+		<ul class="list-unstyled">
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2012/08">
+					August 2012 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2012/07">
+					July 2012 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2012/05">
+					May 2012 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2012/04">
+					April 2012 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2012/03">
+					March 2012 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2012/02">
+					February 2012 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2012/01">
+					January 2012 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/12">
+					December 2011 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/11">
+					November 2011 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/10">
+					October 2011 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/09">
+					September 2011 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/08">
+					August 2011 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/06">
+					June 2011 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/05">
+					May 2011 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/04">
+					April 2011 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/03">
+					March 2011 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/02">
+					February 2011 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2011/01">
+					January 2011 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/12">
+					December 2010 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/11">
+					November 2010 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/10">
+					October 2010 (6)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/09">
+					September 2010 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/08">
+					August 2010 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/07">
+					July 2010 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/06">
+					June 2010 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/05">
+					May 2010 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/04">
+					April 2010 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/03">
+					March 2010 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2010/02">
+					February 2010 (3)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/12">
+					December 2009 (5)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/11">
+					November 2009 (5)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/10">
+					October 2009 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/09">
+					September 2009 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/08">
+					August 2009 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/07">
+					July 2009 (4)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/06">
+					June 2009 (6)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/05">
+					May 2009 (8)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/03">
+					March 2009 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/02">
+					February 2009 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2009/01">
+					January 2009 (6)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2008/12">
+					December 2008 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2008/11">
+					November 2008 (2)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2008/10">
+					October 2008 (5)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2008/06">
+					June 2008 (1)
+				</a>
+			</li>
+					<li>
+				<a href="http://philsturgeon.co.uk/blog/archive/2008/05">
+					May 2008 (1)
+				</a>
+			</li>
+			</ul>
+	<div class="divider"></div>
+</div>
+
+</div>
+	<!-- Page layout: Default -->
+<h2>Page missing</h2>
+
+
+<section id="default" class="page-chunk default"><div class="page-chunk-pad"><p>We cannot find the page you are looking for, please click <a href="http://philsturgeon.co.uk/home">here</a> to go to the homepage.</p></div></section>
+
+
+
+				
+			</div>
+		
+		</div>
+		
+	</div>
+	
+</div>
+
+<div id="footerWrapper">
+	
+	<div id="footer">
+		
+		<div id="up"><a href="#top"><img alt="up.png" src="http://philsturgeon.co.uk/addons/default/themes/monotone/img/up.png" /></a></div>
+
+		<div class="one_quarter">
+			<h5>About</h5>
+			<p>I am from Bristol and I like cider.</p>
+
+<p>I am at heart a PHP developer but every now and then I get forced into using Ruby on Rails by people who think it's the best thing since sliced bread.</p>
+
+<p>I have a limited company with <a href="http://ikreativ.com/" target="_blank">Scott Parry</a> called <a href="http://happyninjas.com/" target="_blank">HappyNinjas</a> where we write a shitload of code for people who give us money.</p>
+
+<p>I work on some great projects, like <a href="http://pyrocms.com/" target="_blank">PyroCMS</a>, <a href="http://codeigniter.com/" target="_blank">CodeIgniter</a> and <a href="http://fuelphp.com/" target="_blank">Fuel</a> which are starting to become a real job for me instead of just part-time open-source volunteerism; which is very nice indeed.</p>
+
+<p>I am also a relatively skilled kayaker, a terrible mountain biker and world traveler.</p>
+		</div>
+		<div class="one_quarter">
+			<h5>Latest Articles</h5>
+			<ul class="navigation">
+			<li><a href="http://philsturgeon.co.uk/blog/2012/08/understanding-circumstance">Understanding Circumstance</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/08/ciconf-mission-complete">CICONF - Mission Complete</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/08/why-php-datetime-rocks">Why PHP DateTime Rocks</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/07/blooie-chat-has-changed">Blooie: Chat has Changed</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/07/php-ecosystem-update">PHP: Ecosystem Update</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/05/codeigniter-conference-2012-sf">CodeIgniter Conference 2012 SF</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/05/laravel-is-awesome">Laravel is Awesome</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/05/composer-with-codeigniter">Composer with CodeIgniter</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/04/cms-interesting-history-powerful-future">CMS: Interesting History, Powerful Future</a></li>
+			<li><a href="http://philsturgeon.co.uk/blog/2012/03/packages-the-way-forward-for-php">Packages: The Way Forward for PHP</a></li>
+	</ul>
+		</div>
+		<div class="one_quarter">
+			<h5>Categories</h5>
+			<ul>
+		<li>
+		<a href="http://philsturgeon.co.uk/blog/category/codeigniter">CodeIgniter</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/command-line">Command Line</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/events">Events</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/expressionengine">ExpressionEngine</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/fuelphp">FuelPHP</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/git">Git</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/iphone">iPhone</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/jquery">jQuery</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/linux">Linux</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/mojomotor">MojoMotor</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/personal">Personal</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/php">PHP</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/pyrocms">PyroCMS</a>	</li>
+	<li>
+		<a href="http://philsturgeon.co.uk/blog/category/rails">Rails</a>	</li>
+</ul>
+
+		</div>
+		<div class="one_quarter_last">
+			<h5>More Phil</h5>
+			<ul class="list-unstyled">
+      <li><a href="http://twitter.com/philsturgeon" target="_blank" title="Follow my thoughts on CodeIgniter, PHP and the web.">Twitter</a></li>
+      <li><a href="http://github.com/philsturgeon" target="_blank" title="Add me to GitHub and see what code I am working on">GitHub</a></li>
+      <li><a href="http://facebook.com/philsturgeon" target="_blank" title="See what I'm doing outside of coding.">Facebook</a></li>
+      <li><a href="http://net.tutsplus.com/author/philip-sturgeon/" target="_blank" title="Sometimes I write nerdy stuff for NetTuts too">NetTuts</a></li>
+      <li><a href="http://stackoverflow.com/users/124378/phil-sturgeon" target="_blank" title="Helping developers with coding problems">StackOverflow</a></li>
+     </ul>
+		</div>
+
+		<div class="legal">
+				Copyright &copy; 2012 Phil Sturgeon &nbsp;&bull;&nbsp; All Rights Reserved. &nbsp;&bull;&nbsp;  
+				Design by <a href="http://happyninjas.com/" title="Design &amp; Development by Scott Parry">Scott Parry</a>. &nbsp;&bull;&nbsp;
+				Powered by <a href="http://pyrocms.com/">PyroCMS</a>.
+		</div>
+
+	</div>
+
+</div>
+
+</body>
+</html>
