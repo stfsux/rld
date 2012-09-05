@@ -6,6 +6,17 @@ for 4k demoscene intro.
 
 
 ---------------------------------------------------------------------
+Coding rules
+---------------------------------------------------------------------
+Make you sure all your symbols are located in one of these sections
+listed below. With gcc, you can do it with __attribute__ keyword.
+ - .bss
+ - .text
+ - .data
+ - .rodata
+
+
+---------------------------------------------------------------------
 Reserved symbols
 ---------------------------------------------------------------------
 * __rld_dt_debug:     pointer to d_ptr of dt_debug dynamic entry.

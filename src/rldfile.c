@@ -3,10 +3,11 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include "rld.h"
 #include "rldlist.h"
 
-void
+uint8_t
  rldfile_find (char* libname, plstr_t dir, plstr_t path)
 {
   unsigned int i;
@@ -39,7 +40,8 @@ void
                   else
                     snprintf (tmp, sizeof(tmp), "%s/%s", dir->item[i], entry->d_name);
                   lstr_add (path, tmp);
-                  break;
+                  closedir (dp);
+                  return 1;
                 }
               }
             }
@@ -49,5 +51,7 @@ void
     }
     closedir (dp);
   }
+  fprintf (stderr, "%s: cannot find `%s'.\n", __progname, filename);
+  return 0;
 }
 

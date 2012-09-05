@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <sys/wait.h>
 #include "rld.h"
 #include "rldlist.h"
 #include "rldsym.h"
@@ -46,6 +47,9 @@ int
   /* verbose mode. */
   int verbose = 0;
 
+  /* compress the output elf. */
+  int compress = 0;
+
   /* number of object file. */
   uint8_t nobj = 0;
 
@@ -64,6 +68,7 @@ int
     { "library-path", 1, NULL,      'L' },
     { "library",      1, NULL,      'l' },
     { "verbose",      0, &verbose,   1  },
+    { "compress",     0, &compress,  1  },
     { "version",      0, NULL,      'v' },
   };
 
@@ -123,7 +128,10 @@ int
           }
         }
         else
-          rldfile_find (optarg, libpath, libs);
+        {
+          if (rldfile_find (optarg, libpath, libs) == 0)
+            goto _quit;
+        }
         break;
 
       case 'o':
@@ -421,6 +429,17 @@ int
   }
 
   platforms[0]->elf_update (output, entry_offset, section_bss_sz+nexternal_symbols*4);
+
+  if (compress)
+  {
+    char cmd[1024];
+    char stub[] = "a=~/I;tail -n+2 \\$0|lzcat>\\$a;chmod +x \\$a;\\$a;rm \\$a;exit";
+    snprintf (cmd, sizeof(cmd), "lzma -z --best %s; echo \"%s\" > %s; cat %s.lzma >> %s;chmod +x %s",
+        filename, stub, filename, filename, filename, filename);
+    system (cmd);
+    snprintf (cmd, sizeof(cmd), "%s.lzma", filename);
+    remove (cmd);
+  }
 
   /* End of main(). */
 _quit:
