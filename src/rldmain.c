@@ -109,31 +109,8 @@ int
         break;
 
       case 'l':
-        if (strncmp(optarg, "c", 1) == 0)
-        {
-          if (strncmp(optarg, "c=", 2) == 0)
-          {
-            if (strchr(optarg, '=') != NULL)
-            {
-              char *tmp = (char*)((unsigned long)strchr(optarg, '=')+(unsigned long)1);
-              input = elf_load (tmp);
-              if (input == NULL)
-                goto _quit;
-              lstr_add (libs, (char*)((unsigned long)strchr(optarg, '=')+(unsigned long)1));
-              elf_close (input);
-            }
-          }
-          else
-          {
-            fprintf (stderr, "%s: please specify the full path of your symbolic link to the libc (e.g.: -lc=/usr/local/libc.so.6).\n", __progname);
-            goto _quit;
-          }
-        }
-        else
-        {
-          if (rldfile_find (optarg, libpath, libs) == 0)
-            goto _quit;
-        }
+        if (rldfile_find (optarg, libpath, libs) == 0)
+          goto _quit;
         break;
 
       case 'o':
