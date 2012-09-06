@@ -3,6 +3,7 @@ include Makefile.conf
 all: $(PROJECT) $(OBJSRT)
 
 $(PROJECT): $(OBJS)
+	test -d bin || mkdir bin
 	$(CC) -g $(LDFLAGS) -o bin/$(PROJECT) $^
 
 %.o: %.c
