@@ -50,6 +50,8 @@ int
   /* compress the output elf. */
   int compress = 0;
 
+  unsigned int target_platform = __RLD_DEFAULT_PLATFORM;
+
   /* number of object file. */
   uint8_t nobj = 0;
 
@@ -162,25 +164,25 @@ int
     uint32_t nsyms = 0;
     input = elf_load (argv[optind+i]);
     if (input == NULL) goto _quit;
-    if (platforms[0]->elf_chkfmt (input) == 0)
+    if (platforms[target_platform]->elf_chkfmt (input) == 0)
     {
       elf_close (input);
       goto _quit;
     }
-    nsyms = platforms[0]->elf_get_nsym (input);
+    nsyms = platforms[target_platform]->elf_get_nsym (input);
     for (j = 1; j < nsyms; j++)
     {
       uint32_t hash = 0, sectype = 0, bind = 0;
       uint32_t type = 0, offset = 0;
       char *symname = NULL;
-      sectype = platforms[0]->elf_get_symsec (input, j);
-      bind = platforms[0]->elf_get_symbind (input, j);
-      type = platforms[0]->elf_get_symtype (input, j);
+      sectype = platforms[target_platform]->elf_get_symsec (input, j);
+      bind = platforms[target_platform]->elf_get_symbind (input, j);
+      type = platforms[target_platform]->elf_get_symtype (input, j);
       if (sectype == SYM_SEC_ABS || type == SYM_TYPE_FILE)
         continue;
       if (type == SYM_TYPE_SEC)
       {
-        symname = platforms[0]->elf_get_secname (input, j);
+        symname = platforms[target_platform]->elf_get_secname (input, j);
         if ((strncmp (symname, ".text", 5) != 0)
             && (strncmp (symname, ".bss", 4) != 0)
             && (strncmp (symname, ".rodata", 7) != 0)
@@ -188,9 +190,9 @@ int
           continue;
       }
       else
-        symname = platforms[0]->elf_get_symstr (input, j);
+        symname = platforms[target_platform]->elf_get_symstr (input, j);
       hash = sym_hash (symname);
-      offset = platforms[0]->elf_get_symval (input, j);
+      offset = platforms[target_platform]->elf_get_symval (input, j);
       if (type != SYM_TYPE_SEC)
       {
         /* check for multiple definition. */
@@ -207,7 +209,7 @@ int
                     && symtab[n]->syms[k]->sectype != SYM_SEC_UNDEF)
                 {
                   fprintf (stderr, "%s:%s: multiple definition of `%s'.\n", 
-                      __progname, argv[optind+i], platforms[0]->elf_get_symstr (input, j));
+                      __progname, argv[optind+i], platforms[target_platform]->elf_get_symstr (input, j));
                   elf_close (input);
                   goto _quit;
                 }
@@ -262,15 +264,15 @@ int
           uint32_t nsyms = 0, hash = 0/*, sectype = 0*/;
           input = elf_load (libs->item[n]);
           if (input == NULL) goto _quit;
-          if (platforms[0]->elf_chkfmt (input) == 0)
+          if (platforms[target_platform]->elf_chkfmt (input) == 0)
           {
             elf_close (input);
             goto _quit;
           }
-          nsyms = platforms[0]->elf_get_nsym (input);
+          nsyms = platforms[target_platform]->elf_get_nsym (input);
           for (k = 0; k < nsyms; k++)
           {
-            hash = sym_hash (platforms[0]->elf_get_symstr (input, k));
+            hash = sym_hash (platforms[target_platform]->elf_get_symstr (input, k));
             if (hash == symtab[i]->syms[j]->hash
                 /* && sectype != SYM_SEC_UNDEF */)
             {
@@ -311,7 +313,7 @@ int
   if (output == NULL) goto _quit;
 
   /* build headers. */
-  vma_debug_ptr = platforms[0]->elf_write_hdrs (output, libs);
+  vma_debug_ptr = platforms[target_platform]->elf_write_hdrs (output, libs);
 
   /* text section */
   for (i = 0; i < nobj; i++)
@@ -320,22 +322,22 @@ int
     uint32_t size = 0;
     symtab[i]->code = lseek (output->fd, 0, SEEK_END);
     input = elf_load (argv[optind+i]);
-    platforms[0]->elf_chkfmt (input);
-    section = platforms[0]->elf_get_sec (input, ".text");
+    platforms[target_platform]->elf_chkfmt (input);
+    section = platforms[target_platform]->elf_get_sec (input, ".text");
     if (section == NULL)
     {
       fprintf (stderr, "%s:%s: warning: there is no .text section in this file.\n", __progname, argv[optind+i]);
       elf_close (input);
       continue;
     }
-    size = platforms[0]->elf_get_secsz (input, ".text");
+    size = platforms[target_platform]->elf_get_secsz (input, ".text");
     write (output->fd, section, size);
     elf_close (input);
   }
 
   /* setup the jump table. */
   section_jmptab = lseek (output->fd, 0, SEEK_END);
-  platforms[0]->elf_build_jmptab (output, nexternal_symbols);
+  platforms[target_platform]->elf_build_jmptab (output, nexternal_symbols);
 
   /* data section. */
   for (i = 0; i < nobj; i++)
@@ -344,15 +346,15 @@ int
     uint32_t size = 0;
     symtab[i]->data = lseek (output->fd, 0, SEEK_END);
     input = elf_load (argv[optind+i]);
-    platforms[0]->elf_chkfmt (input);
-    section = platforms[0]->elf_get_sec (input, ".data");
+    platforms[target_platform]->elf_chkfmt (input);
+    section = platforms[target_platform]->elf_get_sec (input, ".data");
     if (section == NULL)
     {
       fprintf (stderr, "%s:%s: warning: there is no .data section in this file.\n", __progname, argv[optind+i]);
       elf_close (input);
       continue;
     }
-    size = platforms[0]->elf_get_secsz (input, ".data");
+    size = platforms[target_platform]->elf_get_secsz (input, ".data");
     write (output->fd, section, size);
     elf_close (input);
   }
@@ -364,15 +366,15 @@ int
     uint32_t size = 0;
     symtab[i]->rodata = lseek (output->fd, 0, SEEK_END);
     input = elf_load (argv[optind+i]);
-    platforms[0]->elf_chkfmt (input);
-    section = platforms[0]->elf_get_sec (input, ".rodata");
+    platforms[target_platform]->elf_chkfmt (input);
+    section = platforms[target_platform]->elf_get_sec (input, ".rodata");
     if (section == NULL)
     {
       fprintf (stderr, "%s:%s: warning: there is no .rodata section in this file.\n", __progname, argv[optind+i]);
       elf_close (input);
       continue;
     }
-    size = platforms[0]->elf_get_secsz (input, ".rodata");
+    size = platforms[target_platform]->elf_get_secsz (input, ".rodata");
     write (output->fd, section, size);
     elf_close (input);
   }
@@ -384,9 +386,7 @@ int
     for (j = 0; j < symtab[i]->nsyms; j++)
     {
       if (symtab[i]->syms[j]->flags&0x2)
-      {
         write (output->fd, &symtab[i]->syms[j]->hash, sizeof(uint32_t));
-      }
     }
   }
 
@@ -396,21 +396,21 @@ int
     uint32_t size = 0;
     symtab[i]->bss = lseek (output->fd, 0, SEEK_END) + section_bss_sz;
     input = elf_load (argv[optind+i]);
-    platforms[0]->elf_chkfmt (input);
-    size = platforms[0]->elf_get_secsz (input, ".bss");
+    platforms[target_platform]->elf_chkfmt (input);
+    size = platforms[target_platform]->elf_get_secsz (input, ".bss");
     section_bss_sz = section_bss_sz + size;
     elf_close (input);
   }
 
   section_addr = symtab[0]->bss + section_bss_sz;
 
-  platforms[0]->elf_update_jmptab (output, section_jmptab,
+  platforms[target_platform]->elf_update_jmptab (output, section_jmptab,
       section_addr, nexternal_symbols);
 
   /* relocation. */
   for (i = 0; i < nobj; i++)
   {
-    platforms[0]->elf_reloc (output, symtab, i, argv[optind+i],
+    platforms[target_platform]->elf_reloc (output, symtab, i, argv[optind+i],
         section_hash, section_addr, section_jmptab,
         nexternal_symbols, vma_debug_ptr);
   }
@@ -428,7 +428,7 @@ int
     }
   }
 
-  platforms[0]->elf_update (output, entry_offset, section_bss_sz+nexternal_symbols*4);
+  platforms[target_platform]->elf_update (output, entry_offset, section_bss_sz+nexternal_symbols*4);
 
   if (compress)
   {

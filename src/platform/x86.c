@@ -10,7 +10,8 @@
 #include "rldsym.h"
 #include "rldelf.h"
 
-#define _X86_INTERP_OFFSET  (sizeof(Elf32_Ehdr)+3*sizeof(Elf32_Phdr))
+#define _X86_INTERP_OFFSET  (sizeof(ElfN_Ehdr)+3*sizeof(ElfN_Phdr))
+#define _X86_JMPTAB_SIZE    (6)
 
 #define elf_set_base(x) (vma_base+x)
 #define elf_set_ehdr(member,data,size)\
@@ -32,6 +33,7 @@ typedef Elf32_Phdr  ElfN_Phdr;
 typedef Elf32_Dyn   ElfN_Dyn;
 typedef Elf32_Sym   ElfN_Sym;
 typedef Elf32_Addr  ElfN_Addr;
+typedef Elf32_Rel   ElfN_Rel;
 
 uint32_t vma_base = 0x08048000;
 
@@ -39,7 +41,7 @@ uint32_t vma_base = 0x08048000;
 uint8_t
  _x86_elf_chkfmt (pelf_file_t elf)
 {
-  Elf32_Ehdr *ehdr = elf->mem;
+  ElfN_Ehdr *ehdr = elf->mem;
   if (ehdr->e_machine != EM_386)
   {
     fprintf (stderr, "%s: file `%s' doesn't match with target architecture.\n", __progname, elf->filename);
@@ -61,16 +63,16 @@ uint8_t
 uint32_t
  _x86_elf_get_hdrsz (void)
 {
-  return sizeof(Elf32_Ehdr)+3*sizeof(Elf32_Phdr);
+  return sizeof(ElfN_Ehdr)+3*sizeof(ElfN_Phdr);
 }
 
 /*-------------------------------------------------------------------*/
-Elf32_Shdr*
+ElfN_Shdr*
  _x86_elf_get_shdr (pelf_file_t elf, uint32_t type)
 {
-  Elf32_Ehdr *ehdr = elf->mem;
-  Elf32_Shdr *shdr = NULL;
-  shdr = (Elf32_Shdr*)((unsigned long)ehdr->e_shoff+(unsigned long)ehdr);
+  ElfN_Ehdr *ehdr = elf->mem;
+  ElfN_Shdr *shdr = NULL;
+  shdr = (ElfN_Shdr*)((unsigned long)ehdr->e_shoff+(unsigned long)ehdr);
   unsigned int i;
   for (i = 0; i < ehdr->e_shnum; i++,shdr++)
   {
@@ -80,20 +82,20 @@ Elf32_Shdr*
 }
 
 /*-------------------------------------------------------------------*/
-Elf32_Dyn*
+ElfN_Dyn*
  _x86_elf_get_dyn (pelf_file_t elf, uint32_t d_tag)
 {
-  Elf32_Ehdr *ehdr = elf->mem;
-  Elf32_Phdr *phdr = NULL;
-  Elf32_Dyn *dyn = NULL;
+  ElfN_Ehdr *ehdr = elf->mem;
+  ElfN_Phdr *phdr = NULL;
+  ElfN_Dyn *dyn = NULL;
   uint32_t i;
-  phdr = (Elf32_Phdr*)(
+  phdr = (ElfN_Phdr*)(
     (unsigned long)ehdr+(unsigned long)ehdr->e_phoff
     );
   for (i = 0; i < ehdr->e_phnum; i++,phdr++)
   {
     if (phdr->p_type == PT_DYNAMIC)
-      dyn = (Elf32_Dyn*)(
+      dyn = (ElfN_Dyn*)(
         (unsigned long)ehdr+(unsigned long)phdr->p_offset
         );
   }
@@ -112,7 +114,7 @@ Elf32_Dyn*
 uint32_t
  _x86_elf_get_nsym (pelf_file_t elf)
 {
-  Elf32_Dyn *dyn = NULL;
+  ElfN_Dyn *dyn = NULL;
   if (elf->flags&ELF_FILE_LIB)
   {
     if ((dyn=_x86_elf_get_dyn(elf, DT_HASH)) != NULL)
@@ -166,8 +168,8 @@ uint32_t
   }
   else
   {
-    Elf32_Shdr *symtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
-    return symtab->sh_size/sizeof(Elf32_Sym);
+    ElfN_Shdr *symtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+    return symtab->sh_size/sizeof(ElfN_Sym);
   }
   return 0;
 }
@@ -176,25 +178,25 @@ uint32_t
 char*
  _x86_elf_get_strsym (pelf_file_t elf, uint32_t id)
 {
-  Elf32_Sym *sym = NULL;
+  ElfN_Sym *sym = NULL;
   if (elf->flags&ELF_FILE_OBJ)
   {
-    Elf32_Shdr *shdr_symtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
-    Elf32_Shdr *shdr_strtab = _x86_elf_get_shdr (elf, SHT_STRTAB);
-    Elf32_Sym *symtab = NULL;
+    ElfN_Shdr *shdr_symtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+    ElfN_Shdr *shdr_strtab = _x86_elf_get_shdr (elf, SHT_STRTAB);
+    ElfN_Sym *symtab = NULL;
     char *strtab = NULL;
-    symtab = (Elf32_Sym*)((unsigned long)elf->mem+(unsigned long)shdr_symtab->sh_offset);
+    symtab = (ElfN_Sym*)((unsigned long)elf->mem+(unsigned long)shdr_symtab->sh_offset);
     sym = &symtab[id];
     strtab = (char*)((unsigned long)elf->mem+(unsigned long)shdr_strtab->sh_offset);
     return &strtab[sym->st_name];
   }
   else if (elf->flags&ELF_FILE_LIB)
   {
-    Elf32_Shdr *shdr_dynsym = _x86_elf_get_shdr (elf, SHT_DYNSYM);
-    Elf32_Shdr *shdr_strtab = _x86_elf_get_shdr (elf, SHT_STRTAB);
+    ElfN_Shdr *shdr_dynsym = _x86_elf_get_shdr (elf, SHT_DYNSYM);
+    ElfN_Shdr *shdr_strtab = _x86_elf_get_shdr (elf, SHT_STRTAB);
     char *strtab = NULL;
-    Elf32_Sym *dynsym = NULL;
-    dynsym = (Elf32_Sym*)((unsigned long)elf->mem+(unsigned long)shdr_dynsym->sh_offset);
+    ElfN_Sym *dynsym = NULL;
+    dynsym = (ElfN_Sym*)((unsigned long)elf->mem+(unsigned long)shdr_dynsym->sh_offset);
     sym = &dynsym[id];
     strtab = (char*)((unsigned long)elf->mem+(unsigned long)shdr_strtab->sh_offset);
     return &strtab[sym->st_name];
@@ -207,8 +209,8 @@ uint32_t
  _x86_elf_get_shsz (pelf_file_t elf, char* secname)
 {
   uint32_t i;
-  Elf32_Ehdr *ehdr = elf->mem;
-  Elf32_Shdr *shdr = (Elf32_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
+  ElfN_Ehdr *ehdr = elf->mem;
+  ElfN_Shdr *shdr = (ElfN_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
 	char* strtab = (char*)((unsigned long)ehdr+(unsigned long)((ElfN_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);  
   for (i = 0; i < ehdr->e_shnum; i++,shdr++)
   {
@@ -224,12 +226,12 @@ uint32_t
 uint32_t
  _x86_elf_get_symtype (pelf_file_t elf, uint32_t id)
 {
-  Elf32_Sym *sym = NULL;
+  ElfN_Sym *sym = NULL;
   if (elf->flags&ELF_FILE_OBJ)
   {
-    Elf32_Shdr *shdr = _x86_elf_get_shdr (elf, SHT_SYMTAB);
-    Elf32_Sym *symtab = NULL;
-    symtab = (Elf32_Sym*)((unsigned long)elf->mem+(unsigned long)shdr->sh_offset);
+    ElfN_Shdr *shdr = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+    ElfN_Sym *symtab = NULL;
+    symtab = (ElfN_Sym*)((unsigned long)elf->mem+(unsigned long)shdr->sh_offset);
     sym = &symtab[id];
     switch (ELF32_ST_TYPE(sym->st_info))
     {
@@ -256,12 +258,12 @@ uint32_t
 uint32_t
  _x86_elf_get_symbind (pelf_file_t elf, uint32_t id)
 {
-  Elf32_Sym *sym = NULL;
+  ElfN_Sym *sym = NULL;
   if (elf->flags&ELF_FILE_OBJ)
   {
-    Elf32_Shdr *shdr = _x86_elf_get_shdr (elf, SHT_SYMTAB);
-    Elf32_Sym *symtab = NULL;
-    symtab = (Elf32_Sym*)((unsigned long)elf->mem+(unsigned long)shdr->sh_offset);
+    ElfN_Shdr *shdr = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+    ElfN_Sym *symtab = NULL;
+    symtab = (ElfN_Sym*)((unsigned long)elf->mem+(unsigned long)shdr->sh_offset);
     sym = &symtab[id];
     switch (ELF32_ST_BIND(sym->st_info))
     {
@@ -282,16 +284,16 @@ uint32_t
 uint32_t
  _x86_elf_get_symsec (pelf_file_t elf, uint32_t id)
 {
-  Elf32_Sym *sym = NULL;
+  ElfN_Sym *sym = NULL;
   char *strtab = NULL, *secname = NULL;
-  Elf32_Ehdr *ehdr = elf->mem;
-  Elf32_Shdr *shdr = (Elf32_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
+  ElfN_Ehdr *ehdr = elf->mem;
+  ElfN_Shdr *shdr = (ElfN_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
   if (elf->flags&ELF_FILE_OBJ)
   {
-    Elf32_Shdr *shsymtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
-    Elf32_Sym *symtab = NULL;
-    symtab = (Elf32_Sym*)((unsigned long)ehdr+(unsigned long)shsymtab->sh_offset);
-    strtab = (char*)((unsigned long)ehdr+(unsigned long)((Elf32_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);
+    ElfN_Shdr *shsymtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+    ElfN_Sym *symtab = NULL;
+    symtab = (ElfN_Sym*)((unsigned long)ehdr+(unsigned long)shsymtab->sh_offset);
+    strtab = (char*)((unsigned long)ehdr+(unsigned long)((ElfN_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);
     sym = &symtab[id];
     switch (sym->st_shndx)
     {
@@ -305,7 +307,7 @@ uint32_t
         return SYM_SEC_BSS;
 
       default:
-        secname = &strtab[((Elf32_Shdr*)&shdr[sym->st_shndx])->sh_name];
+        secname = &strtab[((ElfN_Shdr*)&shdr[sym->st_shndx])->sh_name];
         if (strncmp (".text", secname, 5) == 0) return SYM_SEC_CODE;
         else if (strncmp (".data", secname, 5) == 0) return SYM_SEC_DATA;
         else if (strncmp (".rodata", secname, 7) == 0) return SYM_SEC_RODATA;
@@ -320,16 +322,16 @@ uint32_t
 char*
  _x86_elf_get_secname (pelf_file_t elf, uint32_t id)
 {
-  Elf32_Sym *sym = NULL;
+  ElfN_Sym *sym = NULL;
   char *strtab = NULL, *secname = NULL;
-  Elf32_Ehdr *ehdr = elf->mem;
-  Elf32_Shdr *shdr = (Elf32_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
+  ElfN_Ehdr *ehdr = elf->mem;
+  ElfN_Shdr *shdr = (ElfN_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
   if (elf->flags&ELF_FILE_OBJ)
   {
-    Elf32_Shdr *shsymtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
-    Elf32_Sym *symtab = NULL;
-    symtab = (Elf32_Sym*)((unsigned long)ehdr+(unsigned long)shsymtab->sh_offset);
-    strtab = (char*)((unsigned long)ehdr+(unsigned long)((Elf32_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);
+    ElfN_Shdr *shsymtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+    ElfN_Sym *symtab = NULL;
+    symtab = (ElfN_Sym*)((unsigned long)ehdr+(unsigned long)shsymtab->sh_offset);
+    strtab = (char*)((unsigned long)ehdr+(unsigned long)((ElfN_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);
     sym = &symtab[id];
   }
   switch (sym->st_shndx)
@@ -344,7 +346,7 @@ char*
       return NULL;
 
     default:
-      secname = &strtab[((Elf32_Shdr*)&shdr[sym->st_shndx])->sh_name];
+      secname = &strtab[((ElfN_Shdr*)&shdr[sym->st_shndx])->sh_name];
       break;
   }
   return secname;
@@ -354,12 +356,12 @@ char*
 uint32_t
  _x86_elf_get_symsz (pelf_file_t elf, uint32_t id)
 {
-  Elf32_Sym *sym = NULL;
+  ElfN_Sym *sym = NULL;
   if (elf->flags&ELF_FILE_OBJ)
   {
-    Elf32_Shdr *shdr = _x86_elf_get_shdr (elf, SHT_SYMTAB);
-    Elf32_Sym *symtab = NULL;
-    symtab = (Elf32_Sym*)((unsigned long)elf->mem+(unsigned long)shdr->sh_offset);
+    ElfN_Shdr *shdr = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+    ElfN_Sym *symtab = NULL;
+    symtab = (ElfN_Sym*)((unsigned long)elf->mem+(unsigned long)shdr->sh_offset);
     sym = &symtab[id];
   }
   else if (elf->flags&ELF_FILE_LIB)
@@ -374,11 +376,11 @@ uint32_t
   pelf_file_t elf;
   uint32_t id;
 {
-  Elf32_Sym *sym = NULL;
-  Elf32_Ehdr *ehdr = elf->mem;
-  Elf32_Shdr *shsymtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
-  Elf32_Sym *symtab = NULL;
-  symtab = (Elf32_Sym*)((unsigned long)ehdr+(unsigned long)shsymtab->sh_offset);
+  ElfN_Sym *sym = NULL;
+  ElfN_Ehdr *ehdr = elf->mem;
+  ElfN_Shdr *shsymtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+  ElfN_Sym *symtab = NULL;
+  symtab = (ElfN_Sym*)((unsigned long)ehdr+(unsigned long)shsymtab->sh_offset);
   sym = &symtab[id];
   return sym->st_value; 
 }
@@ -423,12 +425,12 @@ void
      uint32_t jmptab, uint32_t nimports, uint32_t vma_debug_ptr)
 {
   pelf_file_t input = NULL;
-  Elf32_Rel *rel = NULL;
+  ElfN_Rel *rel = NULL;
   unsigned int i, j, k;
   uint32_t vma_section_hash = elf_set_base (section_hash);
   uint32_t vma_section_addr = elf_set_base (section_addr);
-  Elf32_Ehdr *ehdr = NULL;
-  Elf32_Shdr *shdr = NULL, *shdrtab = NULL;
+  ElfN_Ehdr *ehdr = NULL;
+  ElfN_Shdr *shdr = NULL, *shdrtab = NULL;
   char *strsectab = NULL;
   char *secname = NULL;
 
@@ -436,7 +438,7 @@ void
   _x86_elf_chkfmt (input);
 
   ehdr = input->mem;
-  shdr = shdrtab = (Elf32_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
+  shdr = shdrtab = (ElfN_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
   strsectab = (char*)((unsigned long)ehdr+(unsigned long)((ElfN_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);
 
   for (k = 0; k < ehdr->e_shnum; k++, shdr++)
@@ -445,9 +447,9 @@ void
     {
       secname = &strsectab[shdr->sh_name];
 
-      rel = (Elf32_Rel*)((unsigned long)input->mem+(unsigned long)shdr->sh_offset);
+      rel = (ElfN_Rel*)((unsigned long)input->mem+(unsigned long)shdr->sh_offset);
 
-      for (i = 0; i < shdr->sh_size/sizeof(Elf32_Rel); i++,rel++)
+      for (i = 0; i < shdr->sh_size/sizeof(ElfN_Rel); i++,rel++)
       {
         psym_t usym = NULL, sym = NULL;
         uint32_t relocaddr = 0, vadd = 0;
@@ -557,7 +559,7 @@ void
               break;
 
             case R_386_PC32:
-              relocaddr = jmptab + usym->hashid*6;
+              relocaddr = jmptab + usym->hashid * _X86_JMPTAB_SIZE;
               relocaddr = relocaddr - (rel->r_offset-vadd+symtab[n]->code);
               break;
           }
@@ -597,11 +599,11 @@ uint32_t
     .e_machine    = EM_386 ,
     .e_version    = EV_CURRENT ,
     .e_entry      = 0x00000000 ,
-    .e_phoff      = sizeof ( Elf32_Ehdr ) ,
+    .e_phoff      = sizeof ( ElfN_Ehdr ) ,
     .e_shoff      = 0x00000000 ,
     .e_flags      = 0x00000000 ,
-    .e_ehsize     = sizeof ( Elf32_Ehdr ) ,
-    .e_phentsize  = sizeof ( Elf32_Phdr ) ,
+    .e_ehsize     = sizeof ( ElfN_Ehdr ) ,
+    .e_phentsize  = sizeof ( ElfN_Phdr ) ,
     .e_phnum      = 0x00000003 ,
     .e_shentsize  = 0x0000 ,
     .e_shnum      = 0x0000 ,
@@ -641,9 +643,9 @@ uint32_t
 
     } ,
   };
-  write (elf->fd, &ehdr, sizeof(Elf32_Ehdr));
+  write (elf->fd, &ehdr, sizeof(ElfN_Ehdr));
   for (i = 0; i < 3; i++)
-    write (elf->fd, &phdr[i], sizeof(Elf32_Phdr));
+    write (elf->fd, &phdr[i], sizeof(ElfN_Phdr));
   write (elf->fd, interp, strlen(interp)+1);
   write (elf->fd, &tmp, sizeof(char));
   for (i = 0; i < libs->nitems; i++)

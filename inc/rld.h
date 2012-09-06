@@ -12,6 +12,7 @@ extern const char * __progname;
 #define __RLD_USAGE   "rld [options] file...\n"\
                       "Options:\n"\
                       "-A ARCH, --architecture ARCH\n"\
+                      "--compress                  Pack the elf output with lzma\n"\
                       "-h, --help                  Print this help\n"\
                       "                            Set a specific architecture\n"\
                       "-L DIRECTORY, --library-path DIRECTORY\n"\
@@ -23,5 +24,11 @@ extern const char * __progname;
                       "-v, --version               Print version information\n"\
                       "\n"\
                       "Troll or report bugs to <stfsux[at]tuxfamily{dot}org>\n"
+
+#define __RLD_PLATFORM_X86      0
+#define __RLD_PLATFORM_AMD64    1
+
+#define __RLD_DEFAULT_PLATFORM  __RLD_PLATFORM_X86
+
 #endif
 
