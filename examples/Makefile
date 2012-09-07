@@ -1,15 +1,23 @@
+ARCH = $(shell getconf LONG_BIT)
+ifeq ($(ARCH), 64)
+LIBSPATH = -L/usr/lib32 -L/lib32
+CFLAGS = -m32 -Os -c
+else
+LIBSPATH = -L/lib -L/usr/lib -L/usr/local/lib
+CFLGAS = -Os
+endif
 
 all: flow2 helloworld
 
 flow2:
-	gcc -m32 -Os -c flow2.c
-	../bin/rld -L/usr/lib32 -lGL -lSDL -o flow2 ../src/runtime/runtime_x86.o ./flow2.o
-	../bin/rld --compress -L/usr/lib32 -lGL -lSDL -o flow2-compressed ../src/runtime/runtime_x86.o ./flow2.o
+	$(CC) $(CFLAGS) -c $@.c
+	../bin/rld $(LIBSPATH) -lGL -lSDL -o $@ ../src/runtime/runtime_x86.o ./$@.o
+	../bin/rld --compress $(LIBSPATH) -lGL -lSDL -o $@-compressed ../src/runtime/runtime_x86.o ./$@.o
 
 helloworld:
-	gcc -m32 -Os -c helloworld.c
-	../bin/rld -L/lib32 -L/usr/lib32 -lc -o helloworld ../src/runtime/runtime_x86.o ./helloworld.o
-	../bin/rld --compress -L/lib32 -L/usr/lib32 -lc -o helloworld-compressed ../src/runtime/runtime_x86.o ./helloworld.o
+	gcc $(CFLAGS) -c $@.c
+	../bin/rld $(LIBSPATH) -lc -o $@ ../src/runtime/runtime_x86.o ./$@.o
+	../bin/rld --compress $(LIBSPATH) -lc -o $@-compressed ../src/runtime/runtime_x86.o ./$@.o
 
 clean:
 	rm -fv *.o *-compressed flow2 helloworld
