@@ -39,7 +39,7 @@ pelf_file_t
         stderr,
         "%s: cannot allocate %lu bytes.\n",
         __progname,
-        strlen(filename)*sizeof(char)
+        (unsigned long)strlen(filename)*sizeof(char)
         );
     close (elf->fd);
     free (elf);
@@ -49,7 +49,14 @@ pelf_file_t
   elf->filename[strlen(filename)] = 0;
   elf->size = lseek (elf->fd, 0, SEEK_END);
   lseek (elf->fd, 0, SEEK_SET);
-  elf->mem = mmap (0, elf->size, PROT_READ, MAP_PRIVATE, elf->fd, 0);
+  elf->mem = mmap (
+                0,
+                elf->size,
+                PROT_READ,
+                MAP_PRIVATE,
+                elf->fd,
+                0
+              );
   if (elf->mem == MAP_FAILED)
   {
     fprintf (
@@ -77,7 +84,7 @@ pelf_file_t
         stderr,
         "%s: cannot allocate %lu bytes.\n",
         __progname,
-        sizeof(elf_file_t)
+        (unsigned long)sizeof(elf_file_t)
         );
     return NULL;
   }

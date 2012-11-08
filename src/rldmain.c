@@ -409,9 +409,10 @@ int
 
   if (compress)
   {
+    /* TODO: use execv instead of system. */
     char cmd[1024];
-    char stub[] = "a=~/I;tail -n+2 \\$0|lzcat>\\$a;chmod +x \\$a;\\$a;rm \\$a;exit";
-    snprintf (cmd, sizeof(cmd), "lzma -z --best %s; echo \"%s\" > %s; cat %s.lzma >> %s;chmod +x %s",
+    char stub[] = "#!/bin/sh\na=~/I;tail -n+3 $0|lzcat>$a;chmod +x $a;$a;rm $a;exit";
+    snprintf (cmd, sizeof(cmd), "lzma -z --best %s; echo \'%s\' > %s; cat %s.lzma >> %s;chmod +x %s",
         filename, stub, filename, filename, filename, filename);
     system (cmd);
     snprintf (cmd, sizeof(cmd), "%s.lzma", filename);

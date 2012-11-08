@@ -7,6 +7,7 @@
 #include "rld.h"
 #include "rldlist.h"
 
+/*------------------------------------------------------------------*/
 uint8_t
  rldfile_find (char* libname, plstr_t dir, plstr_t path)
 {
@@ -24,7 +25,11 @@ uint8_t
     {
       if (entry->d_type == DT_LNK)
       {
-        if (strncmp (entry->d_name, filename, strlen(filename)) == 0)
+        if (strncmp(
+                entry->d_name,
+                filename,
+                strlen(filename)
+              ) == 0)
         {
           if (strlen(entry->d_name) > strlen(filename))
           {
@@ -36,9 +41,25 @@ uint8_t
                 if ((strlen(filename)+strlen(dir->item[i])) < 255)
                 {
                   if (dir->item[i][strlen(dir->item[i])-1] == '/')
-                    snprintf (tmp, sizeof(tmp), "%s%s", dir->item[i], entry->d_name);
+                  {
+                    snprintf (
+                          tmp,
+                          sizeof(tmp),
+                          "%s%s",
+                          dir->item[i],
+                          entry->d_name
+                        );
+                  }
                   else
-                    snprintf (tmp, sizeof(tmp), "%s/%s", dir->item[i], entry->d_name);
+                  {
+                    snprintf (
+                          tmp,
+                          sizeof(tmp),
+                          "%s/%s",
+                          dir->item[i],
+                          entry->d_name
+                        );
+                  }
                   lstr_add (path, tmp);
                   closedir (dp);
                   return 1;

@@ -4,6 +4,7 @@
 #include "rld.h"
 #include "rldlist.h"
 
+/*------------------------------------------------------------------*/
 plstr_t 
  lstr_create ( void )
 {
@@ -16,6 +17,7 @@ plstr_t
 	return lstr;
 }
 
+/*------------------------------------------------------------------*/
 void
  lstr_add (plstr_t lstr, char* str)
 {
@@ -23,14 +25,24 @@ void
 	ptr = realloc (lstr->item, sizeof(char*)*(lstr->nitems+1));
 	if (ptr == NULL)
   {
-    fprintf (stderr, "%s: cannot re-allocate %lu bytes.\n", __progname, (lstr->nitems+1)*sizeof(char*));
+    fprintf (
+          stderr,
+          "%s: cannot re-allocate %lu bytes.\n",
+          __progname,
+          (unsigned long)(lstr->nitems+1)*sizeof(char*)
+        );
 		return;
   }
 	lstr->item = ptr;
 	lstr->item[lstr->nitems] = calloc (strlen(str)+1, sizeof(char));
 	if (lstr->item[lstr->nitems] == NULL)
   {
-    fprintf (stderr, "%s: cannot allocate %lu bytes.\n", __progname, (strlen(str)+1)*sizeof(char));
+    fprintf (
+          stderr,
+          "%s: cannot allocate %lu bytes.\n",
+          __progname,
+          (unsigned long)(strlen(str)+1)*sizeof(char)
+        );
 		return;
   }
 	strncpy (lstr->item[lstr->nitems], str, strlen(str));
@@ -38,6 +50,7 @@ void
 	lstr->nitems++;
 }
 
+/*------------------------------------------------------------------*/
 void
  lstr_destroy (plstr_t lstr)
 {

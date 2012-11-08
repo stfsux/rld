@@ -18,7 +18,12 @@ psymtab_t *
   symtab = calloc (nobj, sizeof(psymtab_t));
   if (symtab == NULL)
   {
-    fprintf (stderr, "%s: cannot allocate `%lu' byte(s).\n", __progname, nobj*sizeof(psymtab_t));
+    fprintf (
+          stderr,
+          "%s: cannot allocate `%lu' byte(s).\n",
+          __progname,
+          (unsigned long)nobj*sizeof(psymtab_t)
+        );
     return NULL;
   }
   for (i = 0; i < nobj; i++)
@@ -29,8 +34,14 @@ psymtab_t *
       for (j = 0; j < i; j++)
         free (symtab[i]);
       free (symtab);
-      fprintf (stderr, "%s: cannot allocate `%lu' byte(s).\n", __progname, nobj*sizeof(symtab_t));
+      fprintf (
+            stderr,
+            "%s: cannot allocate `%lu' byte(s).\n",
+            __progname,
+            (unsigned long)nobj*sizeof(symtab_t)
+          );
     }
+    
   }
   return symtab;
 }
@@ -41,16 +52,26 @@ uint8_t
      uint32_t sectype, uint32_t bind, uint32_t type, uint32_t rid, 
      uint32_t offset)
 {
-  symtab->syms = realloc (symtab->syms, (symtab->nsyms+1)*sizeof(psym_t));
+  symtab->syms = realloc (
+                    symtab->syms,
+                    (symtab->nsyms+1)*sizeof(psym_t)
+                  );
   if (symtab->syms == NULL)
     return 0;
   symtab->syms[symtab->nsyms] = calloc (1, sizeof(sym_t));
   if (symtab->syms[symtab->nsyms] == NULL)
     return 0;
-  symtab->syms[symtab->nsyms]->symname = calloc (strlen (symname) + 1, sizeof(char));
+  symtab->syms[symtab->nsyms]->symname = calloc (
+                                            strlen(symname)+1,
+                                            sizeof(char)
+                                          );
   if (symtab->syms[symtab->nsyms]->symname == NULL)
     return 0;
-  strncpy (symtab->syms[symtab->nsyms]->symname, symname, strlen (symname));
+  strncpy (
+      symtab->syms[symtab->nsyms]->symname,
+      symname,
+      strlen (symname)
+    );
   symtab->syms[symtab->nsyms]->symname[strlen (symname)] = 0;
   symtab->syms[symtab->nsyms]->hash = hash;
   symtab->syms[symtab->nsyms]->sectype = sectype;
