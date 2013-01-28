@@ -1,20 +1,64 @@
 ---------------------------------------------------------------------
 Introduction
 ---------------------------------------------------------------------
- Rape'n'load is a GNU/Linux linker focus on size-coding especially
-for 4k demoscene intro.
+ Rape'n'load is an experimental GNU/Linux linker designed to build
+tiny elf, especially for 4k intro. It will produce a crafted elf
+which contains no section and will resolve itself external symbols
+in runtime. More details at http://www.pouet.net/topic.php?which=5392 
 
+---------------------------------------------------------------------
+Installation
+---------------------------------------------------------------------
+* Type 'make' to compile
+* Type 'make install' to install. You can also set PREFIX to change
+  the installation path. (e.g. 'make PREFIX=/dev/null install')
+* Type 'make uninstall' to uninstall. You have to delete manually the
+  directory PREFIX/lib/rld.
+
+---------------------------------------------------------------------
+Usage
+---------------------------------------------------------------------
+rld [OPTIONS] FILENAME...
+Options:
+    -A ARCH, --architecture ARCH           Set a specific
+                                           architecture.
+    --compress                             Pack the elf output with
+                                           lzma.
+    -h, --help                             Print help.
+    -L DIRECTORY, --library-path DIRECTORY Add a DIRECTORY to library
+                                           search path.
+    -l LIBNAME, --library LIBNAME          Search for library
+                                           LIBNAME.
+    -o FILE, --output FILE                 Set output file name.
+    --verbose                              Output lots of bullshit
+                                           during link.
+    -v, --version                          Print version information.
+
+Note: You always have to specify the statup object. By default the
+      startup object is located in PREFIX/lib/rld/startup_ARCH.o.
+      You can also use 'rlds' which is a simple script with
+      predefined arguments.
+
+Usage example:
+$ gcc -c hello.c -o hello.o
+$ rld -L/lib -L/usr/lib -o hello /usr/lib/rld/startup_x86.o hello.o
+---
+or with rlds
+---
+$ rlds -o hello hello.o
 
 ---------------------------------------------------------------------
 Coding rules
 ---------------------------------------------------------------------
-Make you sure all your symbols are located in one of these sections
-listed below. With gcc, you can do it with __attribute__ keyword.
- - .bss
+Make you sure that all your symbols are located in appropriate
+section. rld will ignore all sections which are not named correctly.
+You have to name your sections with this form "name.type" which
+type is one of the following string:
  - .text
  - .data
  - .rodata
-
+ - .bss
+E.g. section ".hello.rodata" is correct.
 
 ---------------------------------------------------------------------
 Reserved symbols
@@ -26,9 +70,47 @@ Reserved symbols
 
 
 ---------------------------------------------------------------------
+What will contain your elf?
+---------------------------------------------------------------------
+[Elf header    ]
+[Program header] ; PT_INTERP 
+[Program header] ; PT_LOAD
+[Program header] ; PT_DYNAMIC
+[Dynamic data  ] ; various informations about dynamic (libname, etc.)
+[Code          ] 
+[Jump table    ]
+[Data          ]
+[Rodata        ]
+[Hash table    ]
+---------------- 
+[Address table ] ; not present in elf
+[Bss           ] ; not present in elf
+
+---------------------------------------------------------------------
 Limitations
 ---------------------------------------------------------------------
 * Command line is limited to 255 arguments.
 * Each command line argument is limited to 255 characters.
 * Input/Output elf cannot exceed 2GiB. 
 * Currently supporting only x86 architecture.
+
+---------------------------------------------------------------------
+Known issues
+---------------------------------------------------------------------
+* COM symbols and bss sections are not managed correctly, will be
+  fixed soon.
+
+---------------------------------------------------------------------
+TODO
+---------------------------------------------------------------------
+* Clean source code.
+* ARM port.
+* Improve statup asm code for x86 platform.
+* Arithmetic coding compression.
+* AMD64 port. Not really a priority since alrj wrote an ELF64 linker
+  using same tricks. http://git.alrj.org/?p=bold.git;a=tree
+
+---------------------------------------------------------------------
+Greatz
+---------------------------------------------------------------------
+alrj, parapete/parcelshit, leblane, las

@@ -77,7 +77,7 @@ int
   /* argc/argv limitations. */
   if ((unsigned int)argc > 255)
     return 1;
-  for (i = 0; i < argc; i++)
+  for (i = 0; i < (unsigned int)argc; i++)
   {
     if (strlen(argv[i]) > 255)
       return 2;
@@ -143,6 +143,7 @@ int
     if (input == NULL) goto _quit;
     if (platforms[target_platform]->elf_chkfmt (input) == 0)
     {
+      fprintf (stderr, "%s: object file '%s' doesn't match with platform target.\n", __progname, argv[optind+i]);
       elf_close (input);
       goto _quit;
     }
@@ -150,26 +151,33 @@ int
     for (j = 1; j < nsyms; j++)
     {
       uint32_t hash = 0, sectype = 0, bind = 0;
-      uint32_t type = 0, offset = 0;
+      uint32_t type = 0, offset = 0, sz = 0;
+      uint16_t secid = 0;
       char *symname = NULL;
       sectype = platforms[target_platform]->elf_get_symsec (input, j);
       bind = platforms[target_platform]->elf_get_symbind (input, j);
       type = platforms[target_platform]->elf_get_symtype (input, j);
+      secid = platforms[target_platform]->elf_get_symsecid (input, j);
       if (sectype == SYM_SEC_ABS || type == SYM_TYPE_FILE)
         continue;
       if (type == SYM_TYPE_SEC)
       {
         symname = platforms[target_platform]->elf_get_secname (input, j);
-        if ((strncmp (symname, ".text", 5) != 0)
-            && (strncmp (symname, ".bss", 4) != 0)
-            && (strncmp (symname, ".rodata", 7) != 0)
-            && (strncmp (symname, ".data", 5) != 0))
+        if ((strstr (symname, ".text") == NULL)
+            && (strstr (symname, ".bss") == NULL)
+            && (strstr (symname, ".rodata") == NULL)
+            && (strstr (symname, ".data") == NULL))
           continue;
+        sz = platforms[target_platform]->elf_get_secsz (input, symname);
+        offset = platforms[target_platform]->elf_get_secoff (input, symname);
       }
       else
+      {
         symname = platforms[target_platform]->elf_get_symstr (input, j);
+        offset = platforms[target_platform]->elf_get_symval (input, j);
+        sz = platforms[target_platform]->elf_get_symsz (input, j);
+      }
       hash = sym_hash (symname);
-      offset = platforms[target_platform]->elf_get_symval (input, j);
       if (type != SYM_TYPE_SEC)
       {
         /* check for multiple definition. */
@@ -195,13 +203,18 @@ int
           }
         }
       }
-      if (symtab_add_sym (symtab[i], symname, hash, sectype, bind, type, j, offset) == 0)
+      if (symtab_add_sym (symtab[i], symname, hash, sectype, bind, type, j, offset, sz, secid) == 0)
       {
         elf_close (input);
         goto _quit;
       }
       if (verbose)
-        fprintf (stdout, "%s: symname: %-30s object: %-10s hash: %08X sectype: %08X bind: %08X type: %08X\n", __progname, symname, argv[optind+i], hash, sectype, bind, type);
+      {
+        fprintf (stdout, "%s: symname: %-30s object: %-10s hash: %08X sectype: %08X bind: %08X type: %08X offset: %08X size: %08X secid: %04X", __progname, symname, argv[optind+i], hash, sectype, bind, type, offset, sz, secid);
+        if (secid != 0)
+          fprintf (stdout, " %s", symtab_get_secname (symtab[i], secid));
+        fprintf (stdout, "\n");
+      }
     }
     elf_close (input);
   }
@@ -296,68 +309,75 @@ int
   for (i = 0; i < nobj; i++)
   {
     void *section = NULL;
-    uint32_t size = 0;
-    symtab[i]->code = lseek (output->fd, 0, SEEK_END);
-    input = elf_load (argv[optind+i]);
-    platforms[target_platform]->elf_chkfmt (input);
-    section = platforms[target_platform]->elf_get_sec (input, ".text");
-    if (section == NULL)
+    for (j = 0; j < symtab[i]->nsyms; j++)
     {
-      fprintf (stderr, "%s:%s: warning: there is no .text section in this file.\n", __progname, argv[optind+i]);
-      elf_close (input);
-      continue;
+      if (symtab[i]->syms[j]->type == SYM_TYPE_SEC &&
+          symtab[i]->syms[j]->sectype == SYM_SEC_CODE &&
+          symtab[i]->syms[j]->size != 0)
+      {
+        symtab[i]->syms[j]->foffset = lseek (output->fd, 0, SEEK_END);
+        if (verbose)
+          fprintf (stdout, "%s: merging %08X bytes from section '%s' at output file offset %08X.\n", __progname,symtab[i]->syms[j]->size, symtab[i]->syms[j]->symname, (uint32_t)symtab[i]->syms[j]->foffset);
+        input = elf_load (argv[optind+i]);
+        section = (void*)((unsigned long)input->mem + symtab[i]->syms[j]->offset);
+        write (output->fd, section, symtab[i]->syms[j]->size);
+        elf_close (input);
+      }
     }
-    size = platforms[target_platform]->elf_get_secsz (input, ".text");
-    write (output->fd, section, size);
-    elf_close (input);
   }
 
   /* setup the jump table. */
   section_jmptab = lseek (output->fd, 0, SEEK_END);
+  if (verbose)
+    fprintf (stdout, "%s: jumptable start at file offset %08X:%u.\n", __progname, (uint32_t)section_jmptab, (uint32_t)section_jmptab);
   platforms[target_platform]->elf_build_jmptab (output, nexternal_symbols);
 
   /* data section. */
   for (i = 0; i < nobj; i++)
   {
     void *section = NULL;
-    uint32_t size = 0;
-    symtab[i]->data = lseek (output->fd, 0, SEEK_END);
-    input = elf_load (argv[optind+i]);
-    platforms[target_platform]->elf_chkfmt (input);
-    section = platforms[target_platform]->elf_get_sec (input, ".data");
-    if (section == NULL)
+    for (j = 0; j < symtab[i]->nsyms; j++)
     {
-      fprintf (stderr, "%s:%s: warning: there is no .data section in this file.\n", __progname, argv[optind+i]);
-      elf_close (input);
-      continue;
+      if (symtab[i]->syms[j]->type == SYM_TYPE_SEC &&
+          symtab[i]->syms[j]->sectype == SYM_SEC_DATA &&
+          symtab[i]->syms[j]->size != 0)
+      {
+        symtab[i]->syms[j]->foffset = lseek (output->fd, 0, SEEK_END);
+        if (verbose)
+          fprintf (stdout, "%s: merging %08X bytes from section '%s' at output file offset %08X.\n", __progname, symtab[i]->syms[j]->size, symtab[i]->syms[j]->symname, (uint32_t)symtab[i]->syms[j]->foffset);
+        input = elf_load (argv[optind+i]);
+        section = (void*)((unsigned long)input->mem + symtab[i]->syms[j]->offset);
+        write (output->fd, section, symtab[i]->syms[j]->size);
+        elf_close (input);
+      }
     }
-    size = platforms[target_platform]->elf_get_secsz (input, ".data");
-    write (output->fd, section, size);
-    elf_close (input);
   }
 
   /* rodata section. */
   for (i = 0; i < nobj; i++)
   {
     void *section = NULL;
-    uint32_t size = 0;
-    symtab[i]->rodata = lseek (output->fd, 0, SEEK_END);
-    input = elf_load (argv[optind+i]);
-    platforms[target_platform]->elf_chkfmt (input);
-    section = platforms[target_platform]->elf_get_sec (input, ".rodata");
-    if (section == NULL)
+    for (j = 0; j < symtab[i]->nsyms; j++)
     {
-      fprintf (stderr, "%s:%s: warning: there is no .rodata section in this file.\n", __progname, argv[optind+i]);
-      elf_close (input);
-      continue;
+      if (symtab[i]->syms[j]->type == SYM_TYPE_SEC &&
+          symtab[i]->syms[j]->sectype == SYM_SEC_RODATA &&
+          symtab[i]->syms[j]->size != 0)
+      {
+        symtab[i]->syms[j]->foffset = lseek (output->fd, 0, SEEK_END);
+        if (verbose)
+          fprintf (stdout, "%s: merging section '%s' at output file offset %08X.\n", __progname, symtab[i]->syms[j]->symname, (uint32_t)symtab[i]->syms[j]->foffset);
+        input = elf_load (argv[optind+i]);
+        section = (void*)((unsigned long)input->mem + symtab[i]->syms[j]->offset);
+        write (output->fd, section, symtab[i]->syms[j]->size);
+        elf_close (input);
+      }
     }
-    size = platforms[target_platform]->elf_get_secsz (input, ".rodata");
-    write (output->fd, section, size);
-    elf_close (input);
   }
 
   /* hash section. */
   section_hash = lseek (output->fd, 0, SEEK_END);
+  if (verbose)
+    fprintf (stdout, "%s: hash section start at file offset %08X:%u.\n", __progname, (uint32_t)section_hash, (uint32_t)section_hash);
   for (i = 0; i < nobj; i++)
   {
     for (j = 0; j < symtab[i]->nsyms; j++)
@@ -368,18 +388,22 @@ int
   }
 
   /* bss section. */
+  uint32_t section_bss = lseek (output->fd, 0, SEEK_END);
   for (i = 0; i < nobj; i++)
   {
-    uint32_t size = 0;
-    symtab[i]->bss = lseek (output->fd, 0, SEEK_END) + section_bss_sz;
-    input = elf_load (argv[optind+i]);
-    platforms[target_platform]->elf_chkfmt (input);
-    size = platforms[target_platform]->elf_get_secsz (input, ".bss");
-    section_bss_sz = section_bss_sz + size;
-    elf_close (input);
+    for (j = 0; j < symtab[i]->nsyms; j++)
+    {
+      if (symtab[i]->syms[j]->sectype == SYM_SEC_BSS &&
+          symtab[i]->syms[j]->size != 0) 
+      {
+        symtab[i]->syms[j]->foffset = section_bss + symtab[i]->syms[j]->size;
+        section_bss_sz = section_bss_sz + symtab[i]->syms[j]->size;
+      }
+    }
   }
 
-  section_addr = symtab[0]->bss + section_bss_sz;
+  section_addr = section_bss + section_bss_sz;
+  fprintf (stdout, "%s: .bss section start at file offset %08X end at %08X\n", __progname, (uint32_t)section_bss, (uint32_t)section_bss+(uint32_t)section_bss_sz);
 
   platforms[target_platform]->elf_update_jmptab (output, section_jmptab,
       section_addr, nexternal_symbols);
@@ -400,7 +424,8 @@ int
       if (symtab[i]->syms[j]->hash == 0x5A8C726D
           && symtab[i]->syms[j]->sectype != SYM_SEC_UNDEF)
       {
-        entry_offset = symtab[i]->code+symtab[i]->syms[j]->offset;
+        psym_t sec = symtab_get_symsec (symtab[i], symtab[i]->syms[j]->secid);
+        entry_offset = sec->foffset+symtab[i]->syms[j]->offset;
       }
     }
   }

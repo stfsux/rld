@@ -103,7 +103,7 @@ ElfN_Dyn*
     return NULL;
   while (dyn->d_tag != DT_NULL)
   {
-    if (dyn->d_tag == d_tag)
+    if (dyn->d_tag == (int32_t)d_tag)
       return dyn;
     dyn++;
   }
@@ -308,14 +308,44 @@ uint32_t
 
       default:
         secname = &strtab[((ElfN_Shdr*)&shdr[sym->st_shndx])->sh_name];
-        if (strncmp (".text", secname, 5) == 0) return SYM_SEC_CODE;
-        else if (strncmp (".data", secname, 5) == 0) return SYM_SEC_DATA;
-        else if (strncmp (".rodata", secname, 7) == 0) return SYM_SEC_RODATA;
-        else if (strncmp (".bss", secname, 4) == 0) return SYM_SEC_BSS;
+        if (strstr (secname, ".text") != NULL) return SYM_SEC_CODE;
+        else if (strstr (secname, ".data") != NULL) return SYM_SEC_DATA;
+        else if (strstr (secname, ".rodata") != NULL) return SYM_SEC_RODATA;
+        else if (strstr (secname, ".bss") != NULL) return SYM_SEC_BSS;
         break;
     }
   }
   return SYM_SEC_UNDEF;
+}
+
+/*-------------------------------------------------------------------*/
+uint16_t
+ _x86_elf_get_symsecid (pelf_file_t elf, uint32_t id)
+{
+  ElfN_Sym *sym = NULL;
+  char *strtab = NULL;
+  ElfN_Ehdr *ehdr = elf->mem;
+  ElfN_Shdr *shdr = (ElfN_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
+  if (elf->flags&ELF_FILE_OBJ)
+  {
+    ElfN_Shdr *shsymtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
+    ElfN_Sym *symtab = NULL;
+    symtab = (ElfN_Sym*)((unsigned long)ehdr+(unsigned long)shsymtab->sh_offset);
+    strtab = (char*)((unsigned long)ehdr+(unsigned long)((ElfN_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);
+    sym = &symtab[id];
+    if (sym->st_shndx == SHN_COMMON)
+    {
+      unsigned int i;
+      for (i = 0; i < ehdr->e_shnum; i++, shdr++)
+      {
+        char* secname = &strtab[shdr->sh_name];
+        if (strstr (secname, ".bss") != NULL)
+          return i;
+      }
+    }
+    return sym->st_shndx;
+  }
+  return 0;
 }
 
 /*-------------------------------------------------------------------*/
@@ -343,7 +373,7 @@ char*
       return NULL;
 
     case SHN_COMMON:
-      return NULL;
+      return ".bss";
 
     default:
       secname = &strtab[((ElfN_Shdr*)&shdr[sym->st_shndx])->sh_name];
@@ -419,6 +449,23 @@ uint32_t
 }
 
 /*-------------------------------------------------------------------*/
+uint32_t
+ _x86_elf_get_secoff (pelf_file_t elf, char* secname)
+{
+  ElfN_Ehdr * ehdr = elf->mem;
+  ElfN_Shdr * shdr = (ElfN_Shdr*)((unsigned long)(ehdr->e_shoff)+(unsigned long)ehdr);
+  /* IOCC-style and unsecure code FTW! */
+  char* shstrtab = (char*)((unsigned long)ehdr+(unsigned long)((ElfN_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);
+  uint32_t i;
+  for ( i = 0; i < ehdr->e_shnum; i++,shdr++ )
+  {
+    if ( !strncmp ( secname, &shstrtab[shdr->sh_name], strlen(secname) ) )
+      return (uint32_t)(shdr->sh_offset);
+  }
+  return 0;
+}
+
+/*-------------------------------------------------------------------*/
 void
  _x86_elf_reloc (pelf_file_t elf, psymtab_t *symtab, uint8_t n,
      char *filename, uint32_t section_hash, uint32_t section_addr,
@@ -433,6 +480,8 @@ void
   ElfN_Shdr *shdr = NULL, *shdrtab = NULL;
   char *strsectab = NULL;
   char *secname = NULL;
+  char *sectarget = NULL;
+  uint32_t secsymid = 0;
 
   input = elf_load (filename);
   _x86_elf_chkfmt (input);
@@ -446,134 +495,116 @@ void
     if (shdr->sh_type == SHT_REL)
     {
       secname = &strsectab[shdr->sh_name];
+      sectarget = strstr (secname, ".rel");
+      
+      if (sectarget == NULL)
+        continue;
+      else
+        sectarget = (char*)((unsigned long)sectarget+4);
+
+      for (i = 0; i < symtab[n]->nsyms; i++)
+      {
+        if (!strcmp(sectarget, symtab[n]->syms[i]->symname))
+        {
+          secsymid = i;
+          break;
+        }
+      }
 
       rel = (ElfN_Rel*)((unsigned long)input->mem+(unsigned long)shdr->sh_offset);
 
       for (i = 0; i < shdr->sh_size/sizeof(ElfN_Rel); i++,rel++)
       {
         psym_t usym = NULL, sym = NULL;
-        uint32_t relocaddr = 0, vadd = 0;
-
-        if (strstr(secname, ".text") != NULL)
-        {
-          lseek (elf->fd, rel->r_offset+symtab[n]->code, SEEK_SET);
-          read (elf->fd, &vadd, sizeof(uint32_t));
-          lseek (elf->fd, rel->r_offset+symtab[n]->code, SEEK_SET);
-        }
-        else if (strstr(secname, ".data") != NULL)
-        {
-          lseek (elf->fd, rel->r_offset+symtab[n]->data, SEEK_SET);
-          read (elf->fd, &vadd, sizeof(uint32_t));
-          lseek (elf->fd, rel->r_offset+symtab[n]->data, SEEK_SET);
-        }
-        else if (strstr(secname, ".rodata") != NULL)
-        {
-          lseek (elf->fd, rel->r_offset+symtab[n]->rodata, SEEK_SET);
-          read (elf->fd, &vadd, sizeof(uint32_t));
-          lseek (elf->fd, rel->r_offset+symtab[n]->rodata, SEEK_SET);
-        }
-        else
-        {
-          fprintf (stderr, "%s: warning: relocation on section `%s' is not supported.\n", __progname, secname);
-          break;
-        }
+        uint32_t src = 0, dst = 0, relocaddr = 0;
+        uint32_t r_addend = 0;
 
         for (j = 0; j < symtab[n]->nsyms; j++)
         {
           if (symtab[n]->syms[j]->symrid == ELF32_R_SYM(rel->r_info))
+          {
             usym = symtab[n]->syms[j];
+            break;
+          }
         }
-        if (usym == NULL)
+        src = rel->r_offset+symtab[n]->syms[secsymid]->foffset;
+
+        lseek (elf->fd, src, SEEK_SET);
+        read (elf->fd, &r_addend, sizeof(uint32_t));
+        lseek (elf->fd, src, SEEK_SET);
+
+        if (r_addend == 0 || r_addend == (uint32_t)-4)
         {
-          fprintf (stderr, "%s: shit happens.\n", __progname);
-          elf_close (input);
-          return;
+          if ((usym->type != SYM_TYPE_SEC) && (usym->flags&(1<<0)))
+          {
+            if (usym->sectype == SYM_SEC_UNDEF)
+            {
+              sym = symtab[usym->fileid]->syms[usym->symid];
+              r_addend += sym->offset;
+            }
+            else
+            {
+              r_addend += usym->offset;
+            }
+          }
         }
-        if (usym->flags == (1<<0))
+
+        printf ("relocating '%-20s' ", usym->symname);
+        if (usym->flags&(1<<0))
         {
+          /* symbol is located in other object file. */
           if (usym->sectype == SYM_SEC_UNDEF)
           {
             sym = symtab[usym->fileid]->syms[usym->symid];
-            switch (sym->sectype)
-            {
-              case SYM_SEC_CODE:
-                relocaddr = symtab[usym->fileid]->code;
-                break;
-
-              case SYM_SEC_DATA:
-                relocaddr = symtab[usym->fileid]->data;
-                break;
-
-              case SYM_SEC_RODATA:
-                relocaddr = symtab[usym->fileid]->rodata;
-                break;
-
-              case SYM_SEC_BSS:
-                relocaddr = symtab[usym->fileid]->bss;
-                break;
-            }
+            psym_t sec = symtab_get_symsec (symtab[usym->fileid], sym->secid);
+            dst = sec->foffset;
           }
+          /* symbol is located in the current object file. */
           else
           {
-            switch (usym->sectype)
-            {
-              case SYM_SEC_CODE:
-                relocaddr = symtab[n]->code;
-                break;
-
-              case SYM_SEC_DATA:
-                relocaddr = symtab[n]->data;
-                break;
-
-              case SYM_SEC_RODATA:
-                relocaddr = symtab[n]->rodata;
-                break;
-
-              case SYM_SEC_BSS:
-                relocaddr = symtab[n]->bss;
-                break;
-            }
+            psym_t sec = symtab_get_symsec (symtab[n], usym->secid);
+            dst = sec->foffset;
           }
+          
           switch (ELF32_R_TYPE(rel->r_info))
           {
             case R_386_32:
-              relocaddr = relocaddr + vadd + usym->offset;
-              relocaddr = elf_set_base(relocaddr);
+              relocaddr = elf_set_base(dst+r_addend);
               break;
 
             case R_386_PC32:
-              if (sym != NULL)
-                relocaddr = (relocaddr+sym->offset) - (rel->r_offset-vadd+symtab[n]->code);
-              else
-                relocaddr = (relocaddr+usym->offset) - (rel->r_offset-vadd+symtab[n]->code);
+              relocaddr = dst+r_addend-src;
               break;
           }
+          printf (" at offset %08X:%08X.\n", src, relocaddr);
           write (elf->fd, &relocaddr, sizeof(uint32_t));
         }
-        else if (usym->flags == (1<<1))
+        else if (usym->flags&(1<<1))
         {
           switch (ELF32_R_TYPE(rel->r_info))
           {
-            case R_386_32:
-              relocaddr = elf_set_base(jmptab + usym->hashid*6);
-              break;
-
             case R_386_PC32:
-              relocaddr = jmptab + usym->hashid * _X86_JMPTAB_SIZE;
-              relocaddr = relocaddr - (rel->r_offset-vadd+symtab[n]->code);
-              break;
+                relocaddr = jmptab + usym->hashid * _X86_JMPTAB_SIZE;
+                relocaddr = relocaddr+r_addend - (src);
+                break;
           }
+          printf (" at offset %08X with location %08X.\n", src, relocaddr);
           write (elf->fd, &relocaddr, sizeof(uint32_t));
         }
-        else if (usym->flags == (1<<2))
+        else if (usym->flags&(1<<2))
         {
-          if (usym->hash == 0xB144F4AD)      /* __rld_debug_ptr */
+          printf ("\n");
+          // __rld_debug_ptr
+          if (usym->hash == 0xB144F4AD)
             write (elf->fd, &vma_debug_ptr, sizeof(uint32_t));
-          else if (usym->hash == 0x5C77F413) /* __rld_import_hash */
+          // __rld_import_hash
+          else if (usym->hash == 0x5C77F413)
             write (elf->fd, &vma_section_hash, sizeof(uint32_t));
-          else if (usym->hash == 0x183369B6) /* __rld_import_addr */
+          // __rld_import_addr
+          else if (usym->hash == 0x183369B6)
             write (elf->fd, &vma_section_addr, sizeof(uint32_t));
-          else if (usym->hash == 0xEBCAB480) /* __rld_num_imports */
+          // __rld_num_imports
+          else if (usym->hash == 0xEBCAB480)
             write (elf->fd, &nimports, sizeof(uint32_t));
         }
       }
@@ -749,6 +780,7 @@ platform_t x86 =
   .elf_get_nsym       = _x86_elf_get_nsym,
   .elf_get_symstr     = _x86_elf_get_strsym,
   .elf_get_symsec     = _x86_elf_get_symsec,
+  .elf_get_symsecid   = _x86_elf_get_symsecid,
   .elf_get_symbind    = _x86_elf_get_symbind,
   .elf_get_symtype    = _x86_elf_get_symtype,
   .elf_get_symsz      = _x86_elf_get_symsz,
@@ -756,6 +788,7 @@ platform_t x86 =
   .elf_reloc          = _x86_elf_reloc,
   .elf_get_sec        = _x86_elf_get_sec,
   .elf_get_secsz      = _x86_elf_get_secsz,
+  .elf_get_secoff     = _x86_elf_get_secoff,
   .elf_get_secname    = _x86_elf_get_secname,
   .elf_get_shsz       = _x86_elf_get_shsz,
   .elf_write_hdrs     = _x86_elf_write_hdrs,

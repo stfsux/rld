@@ -2,6 +2,16 @@ include Makefile.conf
 
 all: $(PROJECT) $(OBJSRT)
 
+install: $(PROJECT) $(OBJSRT)
+	mkdir -p $(PREFIX)/lib/$(PROJECT)
+	cp -vr src/runtime/runtime_x86.o $(PREFIX)/lib/$(PROJECT)
+	cp -vr bin/$(PROJECT) $(PREFIX)/bin/$(PROJECT)
+	chmod +x tools/rlds 
+	cp -vr tools/rlds $(PREFIX)/bin/rlds
+
+uninstall:
+	rm -vf $(PREFIX)/lib/rld/runtime_x86.o $(PREFIX)/bin/rlds $(PREFIX)/bin/rld
+
 $(PROJECT): $(OBJS)
 	test -d bin || mkdir bin
 	$(CC) -g $(LDFLAGS) -o bin/$(PROJECT) $^
@@ -9,9 +19,9 @@ $(PROJECT): $(OBJS)
 %.o: %.c
 	$(CC) -g $(CFLAGS) -c $< -o $@
 
-src/runtime/runtime_x86.o: src/runtime/runtime_x86.asm 
+src/runtime/startup_x86.o: src/runtime/startup_x86.asm 
 ifeq ($(PLATFORM_X86),yes)
-	$(AS_X86) --32 src/runtime/runtime_x86.asm -o src/runtime/runtime_x86.o
+	$(AS_X86) --32 src/runtime/startup_x86.asm -o src/runtime/startup_x86.o
 endif
 
 clean:

@@ -1,4 +1,9 @@
 
+# I really should to improve this runtime.
+# I planed to improve it when my debugger
+# will be done, I lose too much time with
+# gdb+hexedit :(
+
 .intel_syntax noprefix
 
 .extern __rld_debug_ptr

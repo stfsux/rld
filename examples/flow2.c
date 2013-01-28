@@ -24,10 +24,10 @@
 
 // This is pretty dirty...note we do not transform the rectangle but we do use
 // glRotatef to pass in a value we can use to animate...avoids one more getProcAddress later
-const GLchar *vsh="varying vec4 p;void main(){p=sin(gl_ModelViewMatrix[1]*9.0);gl_Position=gl_Vertex;}";
+const GLchar *vsh = "varying vec4 p;void main(){p=sin(gl_ModelViewMatrix[1]*9.0);gl_Position=gl_Vertex;}";
 
 // an iterative function for colour
-const GLchar *fsh="varying vec4 p;void main(){float r,t,j;vec4 v=gl_FragCoord/400.0-1.0;r=v.x*p.r;for(int j=0;j<7;j++){t=v.x+p.r*p.g;v.x=t*t-v.y*v.y+r;v.y=p.g*3.0*t*v.y+v.y;}gl_FragColor=vec4(mix(p,vec4(t),max(t,v.x)));}";
+const GLchar *fsh ="varying vec4 p;void main(){float r,t,j;vec4 v=gl_FragCoord/400.0-1.0;r=v.x*p.r;for(int j=0;j<7;j++){t=v.x+p.r*p.g;v.x=t*t-v.y*v.y+r;v.y=p.g*3.0*t*v.y+v.y;}gl_FragColor=vec4(mix(p,vec4(t),max(t,v.x)));}";
 
 //p.g*3.0*t*v.y+i;\
 

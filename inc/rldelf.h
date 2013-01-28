@@ -23,6 +23,7 @@ typedef struct _platform
   uint32_t (*elf_get_nsym)(pelf_file_t elf);
   char* (*elf_get_symstr)(pelf_file_t elf, uint32_t id);
   uint32_t (*elf_get_symsec)(pelf_file_t elf, uint32_t id);
+  uint16_t (*elf_get_symsecid)(pelf_file_t elf, uint32_t id);
   uint32_t (*elf_get_symbind)(pelf_file_t elf, uint32_t id);
   uint32_t (*elf_get_symtype)(pelf_file_t elf, uint32_t id);
   uint32_t (*elf_get_symsz)(pelf_file_t elf, uint32_t id);
@@ -32,6 +33,7 @@ typedef struct _platform
       uint32_t jmptab, uint32_t nimports, uint32_t vma_debug_ptr);
   void* (*elf_get_sec)(pelf_file_t elf, char *secname);
   uint32_t (*elf_get_secsz)(pelf_file_t elf, char *secname);
+  uint32_t (*elf_get_secoff)(pelf_file_t elf, char *secname);
   char* (*elf_get_secname)(pelf_file_t elf, uint32_t id);
   uint32_t (*elf_get_shsz)(pelf_file_t elf, char* secname);
   uint32_t (*elf_write_hdrs)(pelf_file_t elf, plstr_t libs);

@@ -28,11 +28,14 @@ typedef struct _sym_t
   uint32_t bind;
   uint32_t type;
   uint32_t offset;
+  uint32_t size;
   uint32_t flags;
   uint32_t fileid;
   uint32_t symid;
   uint32_t symrid;
   uint32_t hashid;
+  uint16_t secid;
+  off_t foffset;
 }sym_t, *psym_t;
 
 typedef struct _symtab
@@ -46,7 +49,9 @@ typedef struct _symtab
 }symtab_t, *psymtab_t;
 
 psymtab_t *symtab_create (uint8_t nobj);
-uint8_t symtab_add_sym (psymtab_t symtab, char *symname, uint32_t hash, uint32_t sectype, uint32_t bind, uint32_t type, uint32_t rid, uint32_t offset);
+uint8_t symtab_add_sym (psymtab_t symtab, char *symname, uint32_t hash, uint32_t sectype, uint32_t bind, uint32_t type, uint32_t rid, uint32_t offset, uint32_t sz, uint16_t secid);
+char* symtab_get_secname (psymtab_t symtab, uint16_t secid);
+psym_t symtab_get_symsec (psymtab_t symtab, uint16_t secid);
 uint8_t symtab_check_usym (psymtab_t *symtab, uint8_t nobj, uint8_t n, uint32_t hash);
 uint32_t symtab_get_usym_hashid (psymtab_t *symtab, uint8_t nobj, uint8_t n, uint32_t hash);
 void symtab_destroy (psymtab_t *symtab, uint8_t nobj);

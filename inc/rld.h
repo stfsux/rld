@@ -4,7 +4,7 @@
 
 extern const char * __progname;
 
-#define __RLD_VERSION "rape'n'load linker v0.1 for GNU/Linux\n"\
+#define __RLD_VERSION "rape'n'load linker v0.001 (experimental) for GNU/Linux\n"\
                       "This program is free software; you may redistribute it under the terms of\n"\
                       "the Don't be a Dick Public Licence.\n"\
                       "This program has absolutely no warranty.\n"
@@ -33,10 +33,10 @@ extern const char * __progname;
 #define __RLD_DEFAULT_PLATFORM  __RLD_PLATFORM_X86
 #elif defined(__amd64)
 #define __RLD_DEFAULT_PLATFORM __RLD_PLATFORM_AMD64
-#error "Arhictecture amd64 is currently not supported."
+#error "Architecture amd64 is currently not supported."
 #elif defined(__arm)
 #define __RLD_DEFAULT_PLATFORM __RLD_PLATFORM_ARM
-#error "Arhictecture arm is currently not supported."
+#error "Architecture arm is currently not supported."
 #endif
 
 #endif

@@ -1,4 +1,3 @@
-/* Undefined symbols manipulation */
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -50,7 +49,7 @@ psymtab_t *
 uint8_t
  symtab_add_sym (psymtab_t symtab, char* symname, uint32_t hash,
      uint32_t sectype, uint32_t bind, uint32_t type, uint32_t rid, 
-     uint32_t offset)
+     uint32_t offset, uint32_t sz, uint16_t secid)
 {
   symtab->syms = realloc (
                     symtab->syms,
@@ -79,10 +78,40 @@ uint8_t
   symtab->syms[symtab->nsyms]->type = type;
   symtab->syms[symtab->nsyms]->symrid = rid;
   symtab->syms[symtab->nsyms]->offset = offset;
+  symtab->syms[symtab->nsyms]->size = sz;
+  symtab->syms[symtab->nsyms]->secid = secid;
   if (symtab->syms[symtab->nsyms]->sectype != SYM_SEC_UNDEF)
     symtab->syms[symtab->nsyms]->flags = 1;
   symtab->nsyms++;
   return 1;
+}
+
+/*------------------------------------------------------------------*/
+char*
+ symtab_get_secname (psymtab_t symtab, uint16_t secid)
+{
+  uint32_t i;
+  for (i = 0; i < symtab->nsyms; i++)
+  {
+    if (symtab->syms[i]->type == SYM_TYPE_SEC &&
+        symtab->syms[i]->secid == secid)
+      return symtab->syms[i]->symname;
+  }
+  return NULL;
+}
+
+/*------------------------------------------------------------------*/
+psym_t
+ symtab_get_symsec (psymtab_t symtab, uint16_t secid)
+{
+  uint32_t i;
+  for (i = 0; i < symtab->nsyms; i++)
+  {
+    if (symtab->syms[i]->type == SYM_TYPE_SEC &&
+        symtab->syms[i]->secid == secid)
+      return symtab->syms[i];
+  }
+  return NULL;
 }
 
 /*------------------------------------------------------------------*/

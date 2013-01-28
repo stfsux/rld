@@ -1,0 +1,4 @@
+#!/bin/bash 
+
+rld -L/lib -L/usr/lib /usr/lib/rld/startup_x86.o $@
+
