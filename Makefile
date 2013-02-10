@@ -4,13 +4,13 @@ all: $(PROJECT) $(OBJSRT)
 
 install: $(PROJECT) $(OBJSRT)
 	mkdir -p $(PREFIX)/lib/$(PROJECT)
-	cp -vr src/runtime/runtime_x86.o $(PREFIX)/lib/$(PROJECT)
+	cp -vr src/runtime/startup_x86.o $(PREFIX)/lib/$(PROJECT)
 	cp -vr bin/$(PROJECT) $(PREFIX)/bin/$(PROJECT)
 	chmod +x tools/rlds 
 	cp -vr tools/rlds $(PREFIX)/bin/rlds
 
 uninstall:
-	rm -vf $(PREFIX)/lib/rld/runtime_x86.o $(PREFIX)/bin/rlds $(PREFIX)/bin/rld
+	rm -vf $(PREFIX)/lib/rld/startup_x86.o $(PREFIX)/bin/rlds $(PREFIX)/bin/rld
 
 $(PROJECT): $(OBJS)
 	test -d bin || mkdir bin
