@@ -97,8 +97,8 @@ Limitations
 ---------------------------------------------------------------------
 Known issues
 ---------------------------------------------------------------------
-* COM symbols and bss sections are not managed correctly, will be
-  fixed soon.
+* [FIXED-02/10/13] COM symbols and bss sections are not managed
+  correctly, will be fixed soon.
 
 ---------------------------------------------------------------------
 TODO

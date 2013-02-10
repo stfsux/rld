@@ -26,5 +26,6 @@ endif
 
 clean:
 	rm -vf src/*.o src/platform/*.o src/runtime/*.o bin/$(PROJECT)
+	@(cd examples && $(MAKE) clean)
 
 .PHONY: clean
