@@ -211,7 +211,7 @@ int
       if (verbose)
       {
         fprintf (stdout, "%s: symname: %-30s object: %-10s hash: %08X sectype: %08X bind: %08X type: %08X offset: %08X size: %08X secid: %04X", __progname, symname, argv[optind+i], hash, sectype, bind, type, offset, sz, secid);
-        if (secid != 0)
+        if (secid != 0 && secid != (uint16_t)~0)
           fprintf (stdout, " %s", symtab_get_secname (symtab[i], secid));
         fprintf (stdout, "\n");
       }
@@ -393,8 +393,10 @@ int
   {
     for (j = 0; j < symtab[i]->nsyms; j++)
     {
-      if (symtab[i]->syms[j]->sectype == SYM_SEC_BSS &&
-          symtab[i]->syms[j]->size != 0) 
+      if ((symtab[i]->syms[j]->sectype == SYM_SEC_BSS &&
+          symtab[i]->syms[j]->type == SYM_TYPE_SEC) ||
+          (symtab[i]->syms[j]->sectype == SYM_SEC_BSS &&
+            symtab[i]->syms[j]->secid == (uint16_t)~0)) 
       {
         symtab[i]->syms[j]->foffset = section_bss + symtab[i]->syms[j]->size;
         section_bss_sz = section_bss_sz + symtab[i]->syms[j]->size;

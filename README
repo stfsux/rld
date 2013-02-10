@@ -83,8 +83,8 @@ What will contain your elf?
 [Rodata        ]
 [Hash table    ]
 ---------------- 
-[Address table ] ; not present in elf
 [Bss           ] ; not present in elf
+[Address table ] ; not present in elf
 
 ---------------------------------------------------------------------
 Limitations

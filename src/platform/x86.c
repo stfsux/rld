@@ -335,6 +335,7 @@ uint16_t
     sym = &symtab[id];
     if (sym->st_shndx == SHN_COMMON)
     {
+      /*
       unsigned int i;
       for (i = 0; i < ehdr->e_shnum; i++, shdr++)
       {
@@ -342,6 +343,8 @@ uint16_t
         if (strstr (secname, ".bss") != NULL)
           return i;
       }
+      */
+      return ~0;
     }
     return sym->st_shndx;
   }
@@ -533,7 +536,9 @@ void
         read (elf->fd, &r_addend, sizeof(uint32_t));
         lseek (elf->fd, src, SEEK_SET);
 
-        if (r_addend == 0 || r_addend == (uint32_t)-4)
+        
+        if (r_addend == 0 || r_addend == (uint32_t)-4 ||
+            usym->secid == 0xFFFF)
         {
           if ((usym->type != SYM_TYPE_SEC) && (usym->flags&(1<<0)))
           {
@@ -594,16 +599,16 @@ void
         else if (usym->flags&(1<<2))
         {
           printf ("\n");
-          // __rld_debug_ptr
+          /* __rld_debug_ptr */
           if (usym->hash == 0xB144F4AD)
             write (elf->fd, &vma_debug_ptr, sizeof(uint32_t));
-          // __rld_import_hash
+          /* __rld_import_hash */
           else if (usym->hash == 0x5C77F413)
             write (elf->fd, &vma_section_hash, sizeof(uint32_t));
-          // __rld_import_addr
+          /* __rld_import_addr */
           else if (usym->hash == 0x183369B6)
             write (elf->fd, &vma_section_addr, sizeof(uint32_t));
-          // __rld_num_imports
+          /* __rld_num_imports */
           else if (usym->hash == 0xEBCAB480)
             write (elf->fd, &nimports, sizeof(uint32_t));
         }

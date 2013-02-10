@@ -99,10 +99,8 @@ typedef struct _chn
     unsigned char sfx;
 }chn_t, *pchn_t;
 
-chn_t channels[2]={
-{0,0,0,0,0,0,0,0,0,0},
-{0,0,0,0,0,0,0,0,0,0}
-};
+chn_t channels[2];
+SDL_AudioSpec format;
  
 unsigned int line __attribute__((section(".data")))= 0;
 unsigned int pattern __attribute__((section(".data")))= 0;
@@ -117,7 +115,6 @@ void
     int argc;
     char **argv;
 {
-    SDL_AudioSpec format;
     format.freq = TRACKER_SAMPLE_RATE;
     format.format = AUDIO_S8;
     format.channels = 1;

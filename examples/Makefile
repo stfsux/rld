@@ -2,7 +2,7 @@ ARCH = $(shell getconf LONG_BIT)
 LIBSPATH_64 = -L/usr/lib32 -L/lib32
 CFLAGS_64 = -m32 -Os -c
 LIBSPATH_32 = -L/lib -L/usr/lib -L/usr/local/lib
-CFLAGS_32 = -Os
+CFLAGS_32 = -Os 
 
 all: flow2 helloworld sections playback 
 

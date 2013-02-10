@@ -107,9 +107,18 @@ psym_t
   uint32_t i;
   for (i = 0; i < symtab->nsyms; i++)
   {
-    if (symtab->syms[i]->type == SYM_TYPE_SEC &&
-        symtab->syms[i]->secid == secid)
-      return symtab->syms[i];
+    if (secid == 0xFFFF)
+    {
+      if (symtab->syms[i]->type == SYM_TYPE_SEC &&
+          symtab->syms[i]->sectype == SYM_SEC_BSS)
+        return symtab->syms[i];
+    }
+    else
+    {
+      if (symtab->syms[i]->type == SYM_TYPE_SEC &&
+          symtab->syms[i]->secid == secid)
+        return symtab->syms[i];
+    }
   }
   return NULL;
 }
