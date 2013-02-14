@@ -86,6 +86,7 @@ int
   /* create lists. */
   libpath = lstr_create ();
   libs    = lstr_create ();
+  rldfile_read_multiarch_conf (libpath);
 
   /* parse cmd. */
   while ((opt=getopt_long (argc, argv, "hva:L:l:o:", optlist, NULL)) != -1)
@@ -125,9 +126,14 @@ int
     goto _quit;
   }
 
-
   if (filename == NULL)
     filename = default_filename;
+
+  if (verbose)
+  {
+    for (i = 0; i < libpath->nitems; i++)
+      fprintf (stdout, "%s: library path `%s'.\n", __progname, libpath->item[i]);
+  }
 
   nobj = (argc-optind)&0xFF;
 
@@ -405,7 +411,8 @@ int
   }
 
   section_addr = section_bss + section_bss_sz;
-  fprintf (stdout, "%s: .bss section start at file offset %08X end at %08X\n", __progname, (uint32_t)section_bss, (uint32_t)section_bss+(uint32_t)section_bss_sz);
+  if (verbose)
+    fprintf (stdout, "%s: .bss section start at file offset %08X end at %08X\n", __progname, (uint32_t)section_bss, (uint32_t)section_bss+(uint32_t)section_bss_sz);
 
   platforms[target_platform]->elf_update_jmptab (output, section_jmptab,
       section_addr, nexternal_symbols);
@@ -415,7 +422,7 @@ int
   {
     platforms[target_platform]->elf_reloc (output, symtab, i, argv[optind+i],
         section_hash, section_addr, section_jmptab,
-        nexternal_symbols, vma_debug_ptr);
+        nexternal_symbols, vma_debug_ptr, verbose);
   }
 
   /* find the entry point. */

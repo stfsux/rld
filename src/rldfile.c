@@ -76,3 +76,51 @@ uint8_t
   return 0;
 }
 
+void
+ rldfile_read_multiarch_conf (plstr_t libpath)
+{
+  FILE* conf = NULL;
+  DIR* dp = NULL;
+  struct dirent *entry = NULL;
+  char filename[256], tmp[256];
+  char *arch[] = {
+    "i386", "i486", "i686"
+  };
+  unsigned int i;
+
+  dp = opendir ("/etc/ld.so.conf.d/");
+  if (dp == NULL)
+    return;
+
+  while ((entry=readdir(dp)) != NULL)
+  {
+    if (entry->d_type == DT_REG)
+    {
+      for (i = 0; i < 3; i++)
+      {
+        if (strstr (entry->d_name, arch[i]) != NULL)
+        {
+          snprintf (filename, sizeof(filename)-1, "/etc/ld.so.conf.d/%s", entry->d_name);
+          conf = fopen (filename, "r");
+          if (conf == NULL)
+            continue;
+          while (fgets (tmp, sizeof(tmp), conf) != NULL)
+          {
+            if (strchr (tmp, '#') != NULL)
+              continue;
+            else if (strstr (tmp, "include") != NULL)
+              continue;
+            if (strlen (tmp) > 1)
+            {
+              tmp[strlen(tmp)-1] = 0;
+              lstr_add (libpath, tmp);
+            }
+          }
+          fclose (conf);
+        }
+      }
+    }
+  }
+  closedir (dp);
+}
+

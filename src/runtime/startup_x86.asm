@@ -1,8 +1,5 @@
 
-# I really should to improve this runtime.
-# I planed to improve it when my debugger
-# will be done, I lose too much time with
-# gdb+hexedit :(
+# I really should improve this fking shit.
 
 .intel_syntax noprefix
 

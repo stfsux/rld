@@ -97,6 +97,7 @@ Limitations
 ---------------------------------------------------------------------
 Known issues
 ---------------------------------------------------------------------
+* Please check current issues at http://stfsux.tuxfamily.org/rld
 * [FIXED-02/10/13] COM symbols and bss sections are not managed
   correctly, will be fixed soon.
 

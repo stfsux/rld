@@ -323,15 +323,12 @@ uint16_t
  _x86_elf_get_symsecid (pelf_file_t elf, uint32_t id)
 {
   ElfN_Sym *sym = NULL;
-  char *strtab = NULL;
   ElfN_Ehdr *ehdr = elf->mem;
-  ElfN_Shdr *shdr = (ElfN_Shdr*)((unsigned long)ehdr+(unsigned long)ehdr->e_shoff);
   if (elf->flags&ELF_FILE_OBJ)
   {
     ElfN_Shdr *shsymtab = _x86_elf_get_shdr (elf, SHT_SYMTAB);
     ElfN_Sym *symtab = NULL;
     symtab = (ElfN_Sym*)((unsigned long)ehdr+(unsigned long)shsymtab->sh_offset);
-    strtab = (char*)((unsigned long)ehdr+(unsigned long)((ElfN_Shdr*)&shdr[ehdr->e_shstrndx])->sh_offset);
     sym = &symtab[id];
     if (sym->st_shndx == SHN_COMMON)
     {
@@ -472,7 +469,7 @@ uint32_t
 void
  _x86_elf_reloc (pelf_file_t elf, psymtab_t *symtab, uint8_t n,
      char *filename, uint32_t section_hash, uint32_t section_addr,
-     uint32_t jmptab, uint32_t nimports, uint32_t vma_debug_ptr)
+     uint32_t jmptab, uint32_t nimports, uint32_t vma_debug_ptr, uint32_t verbose)
 {
   pelf_file_t input = NULL;
   ElfN_Rel *rel = NULL;
@@ -554,7 +551,8 @@ void
           }
         }
 
-        printf ("relocating '%-20s' ", usym->symname);
+        if (verbose)
+          fprintf (stdout, "relocating '%-20s' ", usym->symname);
         if (usym->flags&(1<<0))
         {
           /* symbol is located in other object file. */
@@ -581,7 +579,8 @@ void
               relocaddr = dst+r_addend-src;
               break;
           }
-          printf (" at offset %08X:%08X.\n", src, relocaddr);
+          if (verbose)
+            fprintf (stdout, " at offset %08X:%08X.\n", src, relocaddr);
           write (elf->fd, &relocaddr, sizeof(uint32_t));
         }
         else if (usym->flags&(1<<1))
@@ -593,12 +592,14 @@ void
                 relocaddr = relocaddr+r_addend - (src);
                 break;
           }
-          printf (" at offset %08X with location %08X.\n", src, relocaddr);
+          if (verbose)
+            fprintf (stdout, " at offset %08X with location %08X.\n", src, relocaddr);
           write (elf->fd, &relocaddr, sizeof(uint32_t));
         }
         else if (usym->flags&(1<<2))
         {
-          printf ("\n");
+          if (verbose)
+            fprintf (stdout, "\n");
           /* __rld_debug_ptr */
           if (usym->hash == 0xB144F4AD)
             write (elf->fd, &vma_debug_ptr, sizeof(uint32_t));

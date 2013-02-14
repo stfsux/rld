@@ -30,7 +30,8 @@ typedef struct _platform
   uint32_t (*elf_get_symval)(pelf_file_t elf, uint32_t id);
   void (*elf_reloc)(pelf_file_t elf, psymtab_t *symtab, uint8_t n,
       char *filename, uint32_t section_hash, uint32_t section_addr,
-      uint32_t jmptab, uint32_t nimports, uint32_t vma_debug_ptr);
+      uint32_t jmptab, uint32_t nimports, uint32_t vma_debug_ptr,
+      uint32_t verbose);
   void* (*elf_get_sec)(pelf_file_t elf, char *secname);
   uint32_t (*elf_get_secsz)(pelf_file_t elf, char *secname);
   uint32_t (*elf_get_secoff)(pelf_file_t elf, char *secname);
