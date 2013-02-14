@@ -500,7 +500,15 @@ void
       if (sectarget == NULL)
         continue;
       else
-        sectarget = (char*)((unsigned long)sectarget+4);
+      {
+        if (strstr (sectarget, ".data") == NULL &&
+            strstr (sectarget, ".rodata") == NULL &&
+            strstr (sectarget, ".bss") == NULL &&
+            strstr (sectarget, ".text") == NULL)
+          continue;
+        else
+          sectarget = (char*)((unsigned long)sectarget+4);
+      }
 
       for (i = 0; i < symtab[n]->nsyms; i++)
       {
