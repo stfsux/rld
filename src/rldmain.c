@@ -250,22 +250,22 @@ int
           case 0xB144F4AD:
             symtab[i]->syms[j]->flags = (1<<2);
             _rld_set_bit(internal_symbols, 0);
-            break;
+            continue;
 
           case 0x5C77F413:
             symtab[i]->syms[j]->flags = (1<<2);
             _rld_set_bit(internal_symbols, 1);
-            break;
+            continue;
 
           case 0x183369B6:
             symtab[i]->syms[j]->flags = (1<<2);
             _rld_set_bit(internal_symbols, 2);
-            break;
+            continue;
 
           case 0xEBCAB480:
             symtab[i]->syms[j]->flags = (1<<2);
             _rld_set_bit(internal_symbols, 3);
-            break;
+            continue;
         }
         for (n = 0; ((n < nobj)&&(symtab[i]->syms[j]->flags == 0)); n++)
         {
