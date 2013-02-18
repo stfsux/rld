@@ -39,5 +39,10 @@ extern const char * __progname;
 #error "Architecture arm is currently not supported."
 #endif
 
+#define _rld_set_bit(x,n)     (x=x|(1<<n))
+#define _rld_clr_bit(x,n)     (x=x&(~(1<<n)))
+#define _rld_bit_is_set(x,n)  (x&(1<<n))
+#define _rld_bit_is_clr(x,n)  (!(x&(1<<n)))
+
 #endif
 

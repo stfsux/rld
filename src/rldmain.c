@@ -34,6 +34,18 @@ int
   plstr_t libs = NULL;
   
   unsigned int i, j, k, n;
+
+  /* internal symbols flag                                 */
+  /* bit-n is set when the internal symbol has been found. */
+  /* [bit 0] __rld_debug_ptr                               */
+  /* [bit 1] __rld_import_hash                             */
+  /* [bit 2] __rld_import_addr                             */
+  /* [bit 3] __rld_num_imports                             */
+  /* [bit 4] Not used                                      */
+  /* [bit 5] Not used                                      */
+  /* [bit 6] Not used                                      */
+  /* [bit 7] Not used                                      */
+  unsigned char internal_symbols = 0;
   
   unsigned long section_hash = 0;
   unsigned long section_addr = 0;
@@ -234,12 +246,26 @@ int
       {
         switch (symtab[i]->syms[j]->hash)
         {
-          case 0x5C77F413:
+          
           case 0xB144F4AD:
+            symtab[i]->syms[j]->flags = (1<<2);
+            _rld_set_bit(internal_symbols, 0);
+            break;
+
+          case 0x5C77F413:
+            symtab[i]->syms[j]->flags = (1<<2);
+            _rld_set_bit(internal_symbols, 1);
+            break;
+
           case 0x183369B6:
+            symtab[i]->syms[j]->flags = (1<<2);
+            _rld_set_bit(internal_symbols, 2);
+            break;
+
           case 0xEBCAB480:
             symtab[i]->syms[j]->flags = (1<<2);
-            continue;
+            _rld_set_bit(internal_symbols, 3);
+            break;
         }
         for (n = 0; ((n < nobj)&&(symtab[i]->syms[j]->flags == 0)); n++)
         {
@@ -300,6 +326,18 @@ int
         fprintf (stderr, "%s: undefined reference to `%s'.\n", __progname, symtab[i]->syms[j]->symname);
         goto _quit;
       }
+    }
+  }
+  for (i = 0; i < 4; i++)
+  {
+    if (_rld_bit_is_clr(internal_symbols,i))
+    {
+      char *sym[] = {
+        "__rld_debug_ptr", "__rld_import_hash",
+        "__rld_import_addr", "__rld_num_imports"
+      };
+      fprintf (stderr, "%s: undefined reference to `%s'.\n", __progname,
+          sym[i]); 
     }
   }
 

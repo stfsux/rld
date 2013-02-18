@@ -63,9 +63,9 @@ E.g. section ".hello.rodata" is correct.
 ---------------------------------------------------------------------
 Reserved symbols
 ---------------------------------------------------------------------
-* __rld_dt_debug:     pointer to d_ptr of dt_debug dynamic entry.
+* __rld_debug_ptr:    pointer to d_ptr of dt_debug dynamic entry.
 * __rld_import_hash:  pointer to list of symbol's hash.
-* __rld_import_nsym:  number of symbol's hash.
+* __rld_num_imports:  number of symbol's hash.
 * __rld_import_addr:  pointer to address of each symbol.
 
 
