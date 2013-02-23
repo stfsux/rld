@@ -143,6 +143,8 @@ __rld_getsym:
 		symhash_found:
 		mov eax , [edx+4]
 		pop esi
+    test eax , eax
+    jz fl_next 
 		add eax , DWORD PTR[esi]
 		jmp _end
 
