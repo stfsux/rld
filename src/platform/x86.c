@@ -681,8 +681,8 @@ uint32_t
       .p_offset = 0x00000000 ,
       .p_vaddr  = 0x00000000 ,
       .p_paddr  = 0x00000000 ,
-      .p_filesz = 0x00000000 ,
-      .p_memsz  = 0x00000000 ,
+      .p_filesz = libs->nitems*8+24 ,
+      .p_memsz  = libs->nitems*8+24 ,
       .p_flags  = PF_R ,
       .p_align  = 0x00000004
 
@@ -706,9 +706,6 @@ uint32_t
   elf_set_nphdr (2, p_offset, &tmp, sizeof(uint32_t));
   tmp = elf_set_base (tmp);
   elf_set_nphdr (2, p_vaddr, &tmp, sizeof(uint32_t));
-  tmp = libs->nitems*4*2+24;
-  elf_set_nphdr (2, p_memsz, &tmp, sizeof(uint32_t));
-  elf_set_nphdr (2, p_filesz, &tmp, sizeof(uint32_t));
   for (i = 0; i < libs->nitems; i++)
   {
     char *libname = NULL;
@@ -735,6 +732,8 @@ uint32_t
   tmp = 0;
   write (elf->fd, &tmp, sizeof(uint32_t));
   tmp = DT_NULL;
+  write (elf->fd, &tmp, sizeof(uint32_t));
+  tmp = 0;
   write (elf->fd, &tmp, sizeof(uint32_t));
   tmp = lseek (elf->fd, 0, SEEK_END);
   elf_set_nphdr (1, p_filesz, &tmp, sizeof(uint32_t));

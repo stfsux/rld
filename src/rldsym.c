@@ -139,19 +139,16 @@ uint32_t
 
 /*------------------------------------------------------------------*/
 uint8_t
- symtab_check_usym (psymtab_t *symtab, uint8_t nobj, uint8_t n,
+ symtab_check_usym (psymtab_t *symtab, uint8_t n,
      uint32_t hash)
 {
   unsigned int i, j;
-  for (i = 0; i < nobj; i++)
+  for (i = 0; i < n; i++)
   {
-    if (i == n)
-      continue;
-
     for (j = 0; j < symtab[i]->nsyms; j++)
     {
       if (symtab[i]->syms[j]->hash == hash
-          && symtab[i]->syms[j]->sectype == SYM_SEC_UNDEF)
+          && symtab[i]->syms[j]->flags == (1<<1))
         return 1;
     }
   }
@@ -160,20 +157,17 @@ uint8_t
 
 /*------------------------------------------------------------------*/
 uint32_t
- symtab_get_usym_hashid (psymtab_t *symtab, uint8_t nobj, uint8_t n,
+ symtab_get_usym_hashid (psymtab_t *symtab, uint8_t n,
      uint32_t hash)
 {
   unsigned int i, j;
   uint32_t hashid = 0;
-  for (i = 0; i < nobj; i++)
+  for (i = 0; i < n; i++)
   {
-    if (i == n)
-      continue;
-
     for (j = 0; j < symtab[i]->nsyms; j++)
     {
       if (symtab[i]->syms[j]->hash == hash
-          && symtab[i]->syms[j]->sectype == SYM_SEC_UNDEF)
+          && symtab[i]->syms[j]->flags == (1<<1))
       {
         hashid = symtab[i]->syms[j]->hashid;
         break;

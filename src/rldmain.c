@@ -301,8 +301,11 @@ int
               symtab[i]->syms[j]->flags = (1<<1);
               symtab[i]->syms[j]->fileid = n;
               symtab[i]->syms[j]->symid = k;
-              if (symtab_check_usym (symtab, nobj, i, hash))
-                symtab[i]->syms[j]->hashid = symtab_get_usym_hashid (symtab, nobj, i, hash);
+              if (symtab_check_usym (symtab, i, hash))
+              {
+                symtab[i]->syms[j]->flags |= (1<<4);
+                symtab[i]->syms[j]->hashid = symtab_get_usym_hashid (symtab, i, hash);
+              }
               else
               {
                 symtab[i]->syms[j]->hashid = nexternal_symbols;
@@ -426,8 +429,13 @@ int
   {
     for (j = 0; j < symtab[i]->nsyms; j++)
     {
-      if (symtab[i]->syms[j]->flags&0x2)
+      if ((symtab[i]->syms[j]->flags&0x2) &&
+          (symtab[i]->syms[j]->flags&(1<<4)) == 0)
+      {
+        if (verbose)
+          fprintf (stdout, "%s: writing hash %08X:%03u:%s\n", __progname, symtab[i]->syms[j]->hash, symtab[i]->syms[j]->hashid, symtab[i]->syms[j]->symname);
         write (output->fd, &symtab[i]->syms[j]->hash, sizeof(uint32_t));
+      }
     }
   }
 

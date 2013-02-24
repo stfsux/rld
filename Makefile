@@ -6,8 +6,8 @@ install: $(PROJECT) $(OBJSRT)
 	mkdir -p $(PREFIX)/lib/$(PROJECT)
 	cp -vr src/runtime/startup_x86.o $(PREFIX)/lib/$(PROJECT)
 	cp -vr bin/$(PROJECT) $(PREFIX)/bin/$(PROJECT)
-	chmod +x tools/rlds 
 	cp -vr tools/rlds $(PREFIX)/bin/rlds
+	chmod ugo+rx $(PREFIX)/bin/rlds
 
 uninstall:
 	rm -vf $(PREFIX)/lib/rld/startup_x86.o $(PREFIX)/bin/rlds $(PREFIX)/bin/rld

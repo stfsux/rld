@@ -52,8 +52,8 @@ psymtab_t *symtab_create (uint8_t nobj);
 uint8_t symtab_add_sym (psymtab_t symtab, char *symname, uint32_t hash, uint32_t sectype, uint32_t bind, uint32_t type, uint32_t rid, uint32_t offset, uint32_t sz, uint16_t secid);
 char* symtab_get_secname (psymtab_t symtab, uint16_t secid);
 psym_t symtab_get_symsec (psymtab_t symtab, uint16_t secid);
-uint8_t symtab_check_usym (psymtab_t *symtab, uint8_t nobj, uint8_t n, uint32_t hash);
-uint32_t symtab_get_usym_hashid (psymtab_t *symtab, uint8_t nobj, uint8_t n, uint32_t hash);
+uint8_t symtab_check_usym (psymtab_t *symtab, uint8_t n, uint32_t hash);
+uint32_t symtab_get_usym_hashid (psymtab_t *symtab, uint8_t n, uint32_t hash);
 void symtab_destroy (psymtab_t *symtab, uint8_t nobj);
 uint32_t sym_hash (char *str);
 
