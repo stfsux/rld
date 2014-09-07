@@ -19,5 +19,5 @@ PLATFORM_PPC	= no
 
 DEBUG			= yes
 
-CFLAGS			= -I./inc -Wall -Wshadow -Wextra
+CFLAGS			= -I./inc -Wall -Wshadow -Wextra -std=c99 -D_BSD_SOURCE
 LDFLAGS			= 

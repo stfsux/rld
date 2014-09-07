@@ -1,3 +1,11 @@
+/* ----------------------------------------------------------------------- */
+/*  This file is part of rld.                                              */
+/* ----------------------------------------------------------------------- */
+/*  Copyright (c) 2000 stfsux <stfsux@tuxfamily.org>                       */
+/*  This work is free. You can redistribute it and/or modify it under the  */
+/*  terms of the Do What The Fuck You Want To Public License, Version 2,   */
+/*  as published by Sam Hocevar. See the COPYING file for more details.    */
+/* ----------------------------------------------------------------------- */
 
 #ifndef __RLD_H_
 #define __RLD_H_

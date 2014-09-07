@@ -1,3 +1,11 @@
+/* ----------------------------------------------------------------------- */
+/*  This file is part of rld.                                              */
+/* ----------------------------------------------------------------------- */
+/*  Copyright (c) 2000 stfsux <stfsux@tuxfamily.org>                       */
+/*  This work is free. You can redistribute it and/or modify it under the  */
+/*  terms of the Do What The Fuck You Want To Public License, Version 2,   */
+/*  as published by Sam Hocevar. See the COPYING file for more details.    */
+/* ----------------------------------------------------------------------- */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,8 +38,8 @@ int
 
   /* list of library search path. */
   plstr_t libpath = NULL;
-  /* list of full path libraries. */
-  plstr_t libs = NULL;
+  plstr_t libdevfp = NULL;
+  plstr_t libname = NULL;
   
   unsigned int i, j, k, n;
 
@@ -96,9 +104,11 @@ int
   }
 
   /* create lists. */
-  libpath = lstr_create ();
-  libs    = lstr_create ();
-  rldfile_read_multiarch_conf (libpath);
+  libpath  = lstr_create ();
+  libdevfp = lstr_create ();
+  libname  = lstr_create ();
+
+  rldfile_read_multiarch_conf (libpath); 
 
   /* parse cmd. */
   while ((opt=getopt_long (argc, argv, "hva:L:l:o:", optlist, NULL)) != -1)
@@ -122,7 +132,7 @@ int
         break;
 
       case 'l':
-        if (rldfile_find (optarg, libpath, libs) == 0)
+        if (rldfile_find (optarg, libpath, libdevfp, libname) == 0)
           goto _quit;
         break;
 
@@ -281,10 +291,10 @@ int
             }
           }
         }
-        for (n = 0; ((n < libs->nitems) && (symtab[i]->syms[j]->flags == 0)); n++)
+        for (n = 0; ((n < libdevfp->nitems) && (symtab[i]->syms[j]->flags == 0)); n++)
         {
           uint32_t nsyms = 0, hash = 0/*, sectype = 0*/;
-          input = elf_load (libs->item[n]);
+          input = elf_load (libdevfp->item[n]);
           if (input == NULL) goto _quit;
           if (platforms[target_platform]->elf_chkfmt (input) == 0)
           {
@@ -350,7 +360,7 @@ int
   if (output == NULL) goto _quit;
 
   /* build headers. */
-  vma_debug_ptr = platforms[target_platform]->elf_write_hdrs (output, libs);
+  vma_debug_ptr = platforms[target_platform]->elf_write_hdrs (output, libname);
 
   /* text section */
   for (i = 0; i < nobj; i++)
@@ -503,7 +513,8 @@ int
 _quit:
   symtab_destroy (symtab, nobj);
   lstr_destroy (libpath);
-  lstr_destroy (libs);
+  lstr_destroy (libdevfp);
+  lstr_destroy (libname);
   elf_close (output);
   return 0;
 }

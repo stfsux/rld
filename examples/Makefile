@@ -23,7 +23,7 @@ sections:
 playback:
 	gcc $(CFLAGS_$(ARCH)) -c $@.c
 	../bin/rld $(LIBSPATH_$(ARCH)) -lSDL -o $@ ../src/runtime/startup_x86.o ./$@.o
-	../bin/rld --compress --verbose $(LIBSPATH_$(ARCH)) -lSDL -o $@-compressed ../src/runtime/startup_x86.o ./$@.o
+	../bin/rld --compress $(LIBSPATH_$(ARCH)) -lSDL -o $@-compressed ../src/runtime/startup_x86.o ./$@.o
 
 clean:
 	rm -fv *.o *-compressed flow2 helloworld sections playback

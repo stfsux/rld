@@ -1,4 +1,4 @@
-include Makefile.conf
+include config.mk
 
 all: $(PROJECT) $(OBJSRT)
 
